@@ -231,6 +231,131 @@
             }
         }
     </style>
+    
+    <script>
+        // Define all functions in the head to ensure they're available
+        function toggleInputFields() {
+            const inputType = document.getElementById('inputType').value;
+            
+            // Hide all input groups
+            document.getElementById('userBaseGroup').style.display = 'none';
+            document.getElementById('monthlyGroup').style.display = 'none';
+            document.getElementById('dailyGroup').style.display = 'none';
+            document.getElementById('tpsGroup').style.display = 'none';
+            
+            // Show relevant input group
+            if (inputType === 'userBase') {
+                document.getElementById('userBaseGroup').style.display = 'block';
+            } else if (inputType === 'monthly') {
+                document.getElementById('monthlyGroup').style.display = 'block';
+            } else if (inputType === 'daily') {
+                document.getElementById('dailyGroup').style.display = 'block';
+            } else if (inputType === 'tps') {
+                document.getElementById('tpsGroup').style.display = 'block';
+            }
+        }
+        
+        function calculateVU() {
+            const inputType = document.getElementById('inputType').value;
+            const peakAccessRate = parseFloat(document.getElementById('peakAccessRate').value) / 100;
+            const sessionDuration = parseFloat(document.getElementById('sessionDuration').value) * 60; // Convert to seconds
+            const conservativeRT = parseFloat(document.getElementById('conservativeRT').value);
+            const comprehensiveRT = parseFloat(document.getElementById('comprehensiveRT').value);
+            
+            let peakTPS, userBase, dailyTransactions, monthlyTransactions, concurrentUsers;
+            
+            // Document methodology constants
+            const PEAK_MULTIPLIER = 8.4; // Peak hour has 8.4x the average hourly transactions
+            
+            if (inputType === 'userBase') {
+                userBase = parseInt(document.getElementById('userBase').value);
+                // Document formula: Concurrent Users = (User Base × 5% × 600s) / 3600
+                concurrentUsers = (userBase * peakAccessRate * sessionDuration) / 3600;
+                // Document formula: Daily Transactions = User Base × 1 transaction per user per day
+                dailyTransactions = userBase * 1;
+                // Document formula: Monthly = Daily × 30
+                monthlyTransactions = dailyTransactions * 30;
+                // Document formula: Peak TPS = (Daily Transactions × 8.4) / 3600
+                peakTPS = (dailyTransactions * PEAK_MULTIPLIER) / 3600;
+            } else if (inputType === 'monthly') {
+                monthlyTransactions = parseInt(document.getElementById('monthlyTransactions').value);
+                // Reverse calculate using document ratios
+                dailyTransactions = monthlyTransactions / 30;
+                userBase = dailyTransactions; // 1 transaction per user per day
+                concurrentUsers = (userBase * peakAccessRate * sessionDuration) / 3600;
+                peakTPS = (dailyTransactions * PEAK_MULTIPLIER) / 3600;
+            } else if (inputType === 'daily') {
+                dailyTransactions = parseInt(document.getElementById('dailyTransactions').value);
+                // Reverse calculate using document ratios
+                userBase = dailyTransactions; // 1 transaction per user per day
+                monthlyTransactions = dailyTransactions * 30;
+                concurrentUsers = (userBase * peakAccessRate * sessionDuration) / 3600;
+                peakTPS = (dailyTransactions * PEAK_MULTIPLIER) / 3600;
+            } else if (inputType === 'tps') {
+                peakTPS = parseFloat(document.getElementById('directTPS').value);
+                // Reverse calculate using document ratios
+                dailyTransactions = (peakTPS * 3600) / PEAK_MULTIPLIER;
+                userBase = dailyTransactions;
+                monthlyTransactions = dailyTransactions * 30;
+                concurrentUsers = (userBase * peakAccessRate * sessionDuration) / 3600;
+            }
+            
+            // Calculate VUs using Little's Law (matching document)
+            const conservativeVU = Math.round(peakTPS * conservativeRT);
+            const comprehensiveVU = Math.round(peakTPS * comprehensiveRT);
+            
+            // Calculate recommendations
+            const loadTestingVU = Math.round(conservativeVU * 1.2); // 20% above conservative
+            const stressTestingVU = Math.round(comprehensiveVU * 1.5); // 50% above comprehensive
+            
+            // Determine infrastructure scale (matching document ranges)
+            let infraScale;
+            if (comprehensiveVU < 1000) {
+                infraScale = "Small Scale";
+            } else if (comprehensiveVU < 10000) {
+                infraScale = "Medium Scale";
+            } else {
+                infraScale = "Large Scale";
+            }
+            
+            // Update display
+            document.getElementById('peakTPS').textContent = peakTPS.toFixed(0);
+            document.getElementById('concurrentUsers').textContent = Math.round(concurrentUsers).toLocaleString();
+            document.getElementById('dailyTrans').textContent = Math.round(dailyTransactions).toLocaleString();
+            document.getElementById('monthlyTrans').textContent = Math.round(monthlyTransactions).toLocaleString();
+            
+            document.getElementById('conservativeVU').textContent = conservativeVU.toLocaleString();
+            document.getElementById('comprehensiveVU').textContent = comprehensiveVU.toLocaleString();
+            document.getElementById('conservativeRTDisplay').textContent = conservativeRT + 's';
+            document.getElementById('comprehensiveRTDisplay').textContent = comprehensiveRT + 's';
+            
+            // Update recommendations
+            document.getElementById('loadTestingRec').textContent = loadTestingVU.toLocaleString() + ' VU';
+            document.getElementById('stressTestingRec').textContent = stressTestingVU.toLocaleString() + ' VU';
+            document.getElementById('infraScale').textContent = infraScale;
+        }
+        
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listeners
+            document.getElementById('calculateBtn').addEventListener('click', calculateVU);
+            document.getElementById('inputType').addEventListener('change', toggleInputFields);
+            
+            // Add input event listeners for real-time calculation
+            const inputs = ['userBase', 'monthlyTransactions', 'dailyTransactions', 'directTPS', 
+                           'peakAccessRate', 'sessionDuration', 'conservativeRT', 'comprehensiveRT'];
+            
+            inputs.forEach(inputId => {
+                const element = document.getElementById(inputId);
+                if (element) {
+                    element.addEventListener('input', calculateVU);
+                }
+            });
+            
+            // Initial calculation
+            calculateVU();
+        });
+    </script>
 </head>
 <body>
     <div class="container">
@@ -245,7 +370,7 @@
                 
                 <div class="input-group">
                     <label for="inputType">Input Type:</label>
-                    <select id="inputType" onchange="toggleInputFields()">
+                    <select id="inputType">
                         <option value="userBase">Total User Base</option>
                         <option value="monthly">Monthly Transactions</option>
                         <option value="daily">Daily Transactions</option>
@@ -293,7 +418,7 @@
                     <input type="number" id="comprehensiveRT" value="3.6" min="0.1" max="10" step="0.1">
                 </div>
                 
-                <button class="calculate-btn" onclick="calculateVU()">🧮 Calculate VUs</button>
+                <button class="calculate-btn" id="calculateBtn">🧮 Calculate VUs</button>
             </div>
             
             <div class="results-section">
@@ -380,107 +505,5 @@
             </div>
         </div>
     </div>
-
-    <script>
-        function toggleInputFields() {
-            const inputType = document.getElementById('inputType').value;
-            
-            // Hide all input groups
-            document.getElementById('userBaseGroup').style.display = 'none';
-            document.getElementById('monthlyGroup').style.display = 'none';
-            document.getElementById('dailyGroup').style.display = 'none';
-            document.getElementById('tpsGroup').style.display = 'none';
-            
-            // Show relevant input group
-            if (inputType === 'userBase') {
-                document.getElementById('userBaseGroup').style.display = 'block';
-            } else if (inputType === 'monthly') {
-                document.getElementById('monthlyGroup').style.display = 'block';
-            } else if (inputType === 'daily') {
-                document.getElementById('dailyGroup').style.display = 'block';
-            } else if (inputType === 'tps') {
-                document.getElementById('tpsGroup').style.display = 'block';
-            }
-        }
-        
-        function calculateVU() {
-            const inputType = document.getElementById('inputType').value;
-            const peakAccessRate = parseFloat(document.getElementById('peakAccessRate').value) / 100;
-            const sessionDuration = parseFloat(document.getElementById('sessionDuration').value) * 60; // Convert to seconds
-            const conservativeRT = parseFloat(document.getElementById('conservativeRT').value);
-            const comprehensiveRT = parseFloat(document.getElementById('comprehensiveRT').value);
-            
-            let peakTPS, userBase, dailyTransactions, monthlyTransactions, concurrentUsers;
-            
-            if (inputType === 'userBase') {
-                userBase = parseInt(document.getElementById('userBase').value);
-                concurrentUsers = (userBase * peakAccessRate * sessionDuration) / 3600;
-                dailyTransactions = userBase * peakAccessRate * 8; // 8 working hours
-                monthlyTransactions = dailyTransactions * 22; // 22 working days
-                peakTPS = (dailyTransactions * 0.15) / 3600; // 15% of daily in peak hour
-            } else if (inputType === 'monthly') {
-                monthlyTransactions = parseInt(document.getElementById('monthlyTransactions').value);
-                dailyTransactions = monthlyTransactions / 30;
-                const peakDayTransactions = dailyTransactions * 3; // 3x peak multiplier
-                const peakHourTransactions = peakDayTransactions * 0.15;
-                peakTPS = peakHourTransactions / 3600;
-                userBase = monthlyTransactions / (22 * 8 * peakAccessRate); // Reverse calculate
-                concurrentUsers = (userBase * peakAccessRate * sessionDuration) / 3600;
-            } else if (inputType === 'daily') {
-                dailyTransactions = parseInt(document.getElementById('dailyTransactions').value);
-                monthlyTransactions = dailyTransactions * 30;
-                const peakDayTransactions = dailyTransactions * 3;
-                const peakHourTransactions = peakDayTransactions * 0.15;
-                peakTPS = peakHourTransactions / 3600;
-                userBase = dailyTransactions / (8 * peakAccessRate);
-                concurrentUsers = (userBase * peakAccessRate * sessionDuration) / 3600;
-            } else if (inputType === 'tps') {
-                peakTPS = parseFloat(document.getElementById('directTPS').value);
-                const peakHourTransactions = peakTPS * 3600;
-                const peakDayTransactions = peakHourTransactions / 0.15;
-                dailyTransactions = peakDayTransactions / 3;
-                monthlyTransactions = dailyTransactions * 30;
-                userBase = dailyTransactions / (8 * peakAccessRate);
-                concurrentUsers = (userBase * peakAccessRate * sessionDuration) / 3600;
-            }
-            
-            // Calculate VUs using Little's Law
-            const conservativeVU = Math.round(peakTPS * conservativeRT);
-            const comprehensiveVU = Math.round(peakTPS * comprehensiveRT);
-            
-            // Calculate recommendations
-            const loadTestingVU = Math.round(conservativeVU * 1.2); // 20% above conservative
-            const stressTestingVU = Math.round(comprehensiveVU * 1.5); // 50% above comprehensive
-            
-            // Determine infrastructure scale
-            let infraScale;
-            if (comprehensiveVU < 1000) {
-                infraScale = "Small Scale";
-            } else if (comprehensiveVU < 10000) {
-                infraScale = "Medium Scale";
-            } else {
-                infraScale = "Large Scale";
-            }
-            
-            // Update display
-            document.getElementById('peakTPS').textContent = peakTPS.toFixed(1);
-            document.getElementById('concurrentUsers').textContent = Math.round(concurrentUsers).toLocaleString();
-            document.getElementById('dailyTrans').textContent = Math.round(dailyTransactions).toLocaleString();
-            document.getElementById('monthlyTrans').textContent = Math.round(monthlyTransactions).toLocaleString();
-            
-            document.getElementById('conservativeVU').textContent = conservativeVU.toLocaleString();
-            document.getElementById('comprehensiveVU').textContent = comprehensiveVU.toLocaleString();
-            document.getElementById('conservativeRTDisplay').textContent = conservativeRT + 's';
-            document.getElementById('comprehensiveRTDisplay').textContent = comprehensiveRT + 's';
-            
-            // Update recommendations
-            document.getElementById('loadTestingRec').textContent = loadTestingVU.toLocaleString() + ' VU';
-            document.getElementById('stressTestingRec').textContent = stressTestingVU.toLocaleString() + ' VU';
-            document.getElementById('infraScale').textContent = infraScale;
-        }
-        
-        // Calculate on page load with default values
-        window.onload = function() {
-            calculateVU();
-        };
-        
+</body>
+</html>
