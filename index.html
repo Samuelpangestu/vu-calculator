@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VU Calculator - Performance Testing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 40px;
+        }
+        
+        .input-section {
+            background: #f8fafc;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .results-section {
+            background: #fefefe;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: #1e293b;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: #4f46e5;
+            margin-right: 12px;
+            border-radius: 2px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
+        }
+        
+        .result-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .result-card:hover {
+            border-color: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .result-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1e293b;
+        }
+        
+        .conservative {
+            border-left: 4px solid #10b981;
+        }
+        
+        .comprehensive {
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .metric:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            font-weight: 500;
+            color: #64748b;
+        }
+        
+        .metric-value {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 1.1rem;
+        }
+        
+        .highlight {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+        
+        .methodology {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        
+        .methodology h3 {
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+        
+        .methodology ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .methodology li {
+            padding: 5px 0;
+            color: #64748b;
+        }
+        
+        .methodology li::before {
+            content: '→';
+            color: #4f46e5;
+            margin-right: 8px;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 VU Calculator</h1>
+            <p>Calculate Conservative Baseline & Comprehensive Load VUs for Performance Testing</p>
+        </div>
+        
+        <div class="main-content">
+            <div class="input-section">
+                <h2 class="section-title">📊 Input Parameters</h2>
+                
+                <div class="input-group">
+                    <label for="inputType">Input Type:</label>
+                    <select id="inputType" onchange="toggleInputFields()">
+                        <option value="userBase">Total User Base</option>
+                        <option value="monthly">Monthly Transactions</option>
+                        <option value="daily">Daily Transactions</option>
+                        <option value="tps">Direct TPS</option>
+                    </select>
+                </div>
+                
+                <div id="userBaseGroup" class="input-group">
+                    <label for="userBase">Total User Base:</label>
+                    <input type="number" id="userBase" placeholder="e.g., 120000" value="120000">
+                </div>
+                
+                <div id="monthlyGroup" class="input-group" style="display: none;">
+                    <label for="monthlyTransactions">Monthly Transactions:</label>
+                    <input type="number" id="monthlyTransactions" placeholder="e.g., 3600000">
+                </div>
+                
+                <div id="dailyGroup" class="input-group" style="display: none;">
+                    <label for="dailyTransactions">Daily Transactions:</label>
+                    <input type="number" id="dailyTransactions" placeholder="e.g., 120000">
+                </div>
+                
+                <div id="tpsGroup" class="input-group" style="display: none;">
+                    <label for="directTPS">Peak TPS:</label>
+                    <input type="number" id="directTPS" placeholder="e.g., 278">
+                </div>
+                
+                <div class="input-group">
+                    <label for="peakAccessRate">Peak Access Rate (%):</label>
+                    <input type="number" id="peakAccessRate" value="5" min="1" max="20" step="0.1">
+                </div>
+                
+                <div class="input-group">
+                    <label for="sessionDuration">Average Session Duration (minutes):</label>
+                    <input type="number" id="sessionDuration" value="10" min="1" max="60">
+                </div>
+                
+                <div class="input-group">
+                    <label for="conservativeRT">Conservative Response Time (seconds):</label>
+                    <input type="number" id="conservativeRT" value="2.5" min="0.1" max="10" step="0.1">
+                </div>
+                
+                <div class="input-group">
+                    <label for="comprehensiveRT">Comprehensive Response Time (seconds):</label>
+                    <input type="number" id="comprehensiveRT" value="3.6" min="0.1" max="10" step="0.1">
+                </div>
+                
+                <button class="calculate-btn" onclick="calculateVU()">🧮 Calculate VUs</button>
+            </div>
+            
+            <div class="results-section">
+                <h2 class="section-title">📈 Results</h2>
+                
+                <div id="calculatedMetrics" class="result-card">
+                    <div class="result-title">📊 Calculated Metrics</div>
+                    <div class="metric">
+                        <span class="metric-label">Peak TPS:</span>
+                        <span class="metric-value" id="peakTPS">-</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Concurrent Users:</span>
+                        <span class="metric-value" id="concurrentUsers">-</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Daily Transactions:</span>
+                        <span class="metric-value" id="dailyTrans">-</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Monthly Transactions:</span>
+                        <span class="metric-value" id="monthlyTrans">-</span>
+                    </div>
+                </div>
+                
+                <div class="result-card conservative">
+                    <div class="result-title">🎯 Conservative Baseline VU</div>
+                    <div class="metric">
+                        <span class="metric-label">Virtual Users:</span>
+                        <span class="metric-value highlight" id="conservativeVU">-</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Use Case:</span>
+                        <span class="metric-value">Development Testing</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Response Time:</span>
+                        <span class="metric-value" id="conservativeRTDisplay">-</span>
+                    </div>
+                </div>
+                
+                <div class="result-card comprehensive">
+                    <div class="result-title">🚀 Comprehensive Load VU</div>
+                    <div class="metric">
+                        <span class="metric-label">Virtual Users:</span>
+                        <span class="metric-value highlight" id="comprehensiveVU">-</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Use Case:</span>
+                        <span class="metric-value">Production Testing</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Response Time:</span>
+                        <span class="metric-value" id="comprehensiveRTDisplay">-</span>
+                    </div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-title">⚡ Performance Recommendations</div>
+                    <div class="metric">
+                        <span class="metric-label">Load Testing:</span>
+                        <span class="metric-value" id="loadTestingRec">-</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Stress Testing:</span>
+                        <span class="metric-value" id="stressTestingRec">-</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-label">Infrastructure Scale:</span>
+                        <span class="metric-value" id="infraScale">-</span>
+                    </div>
+                </div>
+                
+                <div class="methodology">
+                    <h3>📋 Calculation Methods</h3>
+                    <ul>
+                        <li><strong>Grafana k6:</strong> VU = TPS × Response Time</li>
+                        <li><strong>Little's Law:</strong> L = λ × W</li>
+                        <li><strong>BlazeMeter:</strong> Session-based calculation</li>
+                        <li><strong>Conservative:</strong> Optimized for development</li>
+                        <li><strong>Comprehensive:</strong> Realistic production load</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleInputFields() {
+            const inputType = document.getElementById('inputType').value;
+            
+            // Hide all input groups
+            document.getElementById('userBaseGroup').style.display = 'none';
+            document.getElementById('monthlyGroup').style.display = 'none';
+            document.getElementById('dailyGroup').style.display = 'none';
+            document.getElementById('tpsGroup').style.display = 'none';
+            
+            // Show relevant input group
+            if (inputType === 'userBase') {
+                document.getElementById('userBaseGroup').style.display = 'block';
+            } else if (inputType === 'monthly') {
+                document.getElementById('monthlyGroup').style.display = 'block';
+            } else if (inputType === 'daily') {
+                document.getElementById('dailyGroup').style.display = 'block';
+            } else if (inputType === 'tps') {
+                document.getElementById('tpsGroup').style.display = 'block';
+            }
+        }
+        
+        function calculateVU() {
+            const inputType = document.getElementById('inputType').value;
+            const peakAccessRate = parseFloat(document.getElementById('peakAccessRate').value) / 100;
+            const sessionDuration = parseFloat(document.getElementById('sessionDuration').value) * 60; // Convert to seconds
+            const conservativeRT = parseFloat(document.getElementById('conservativeRT').value);
+            const comprehensiveRT = parseFloat(document.getElementById('comprehensiveRT').value);
+            
+            let peakTPS, userBase, dailyTransactions, monthlyTransactions, concurrentUsers;
+            
+            if (inputType === 'userBase') {
+                userBase = parseInt(document.getElementById('userBase').value);
+                concurrentUsers = (userBase * peakAccessRate * sessionDuration) / 3600;
+                dailyTransactions = userBase * peakAccessRate * 8; // 8 working hours
+                monthlyTransactions = dailyTransactions * 22; // 22 working days
+                peakTPS = (dailyTransactions * 0.15) / 3600; // 15% of daily in peak hour
+            } else if (inputType === 'monthly') {
+                monthlyTransactions = parseInt(document.getElementById('monthlyTransactions').value);
+                dailyTransactions = monthlyTransactions / 30;
+                const peakDayTransactions = dailyTransactions * 3; // 3x peak multiplier
+                const peakHourTransactions = peakDayTransactions * 0.15;
+                peakTPS = peakHourTransactions / 3600;
+                userBase = monthlyTransactions / (22 * 8 * peakAccessRate); // Reverse calculate
+                concurrentUsers = (userBase * peakAccessRate * sessionDuration) / 3600;
+            } else if (inputType === 'daily') {
+                dailyTransactions = parseInt(document.getElementById('dailyTransactions').value);
+                monthlyTransactions = dailyTransactions * 30;
+                const peakDayTransactions = dailyTransactions * 3;
+                const peakHourTransactions = peakDayTransactions * 0.15;
+                peakTPS = peakHourTransactions / 3600;
+                userBase = dailyTransactions / (8 * peakAccessRate);
+                concurrentUsers = (userBase * peakAccessRate * sessionDuration) / 3600;
+            } else if (inputType === 'tps') {
+                peakTPS = parseFloat(document.getElementById('directTPS').value);
+                const peakHourTransactions = peakTPS * 3600;
+                const peakDayTransactions = peakHourTransactions / 0.15;
+                dailyTransactions = peakDayTransactions / 3;
+                monthlyTransactions = dailyTransactions * 30;
+                userBase = dailyTransactions / (8 * peakAccessRate);
+                concurrentUsers = (userBase * peakAccessRate * sessionDuration) / 3600;
+            }
+            
+            // Calculate VUs using Little's Law
+            const conservativeVU = Math.round(peakTPS * conservativeRT);
+            const comprehensiveVU = Math.round(peakTPS * comprehensiveRT);
+            
+            // Calculate recommendations
+            const loadTestingVU = Math.round(conservativeVU * 1.2); // 20% above conservative
+            const stressTestingVU = Math.round(comprehensiveVU * 1.5); // 50% above comprehensive
+            
+            // Determine infrastructure scale
+            let infraScale;
+            if (comprehensiveVU < 1000) {
+                infraScale = "Small Scale";
+            } else if (comprehensiveVU < 10000) {
+                infraScale = "Medium Scale";
+            } else {
+                infraScale = "Large Scale";
+            }
+            
+            // Update display
+            document.getElementById('peakTPS').textContent = peakTPS.toFixed(1);
+            document.getElementById('concurrentUsers').textContent = Math.round(concurrentUsers).toLocaleString();
+            document.getElementById('dailyTrans').textContent = Math.round(dailyTransactions).toLocaleString();
+            document.getElementById('monthlyTrans').textContent = Math.round(monthlyTransactions).toLocaleString();
+            
+            document.getElementById('conservativeVU').textContent = conservativeVU.toLocaleString();
+            document.getElementById('comprehensiveVU').textContent = comprehensiveVU.toLocaleString();
+            document.getElementById('conservativeRTDisplay').textContent = conservativeRT + 's';
+            document.getElementById('comprehensiveRTDisplay').textContent = comprehensiveRT + 's';
+            
+            // Update recommendations
+            document.getElementById('loadTestingRec').textContent = loadTestingVU.toLocaleString() + ' VU';
+            document.getElementById('stressTestingRec').textContent = stressTestingVU.toLocaleString() + ' VU';
+            document.getElementById('infraScale').textContent = infraScale;
+        }
+        
+        // Calculate on page load with default values
+        window.onload = function() {
+            calculateVU();
+        };
+        
