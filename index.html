@@ -357,6 +357,119 @@
             line-height: 1.4;
         }
         
+        /* Infrastructure Specifications Styles */
+        .infrastructure-content {
+            padding: 40px;
+        }
+        
+        .infra-section {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .specs-table-container {
+            overflow-x: auto;
+            margin: 30px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-size: 0.9rem;
+        }
+        
+        .specs-table th {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 16px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .specs-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+        
+        .spec-row:hover {
+            background: #f8fafc;
+        }
+        
+        .small-scale {
+            border-left: 4px solid #10b981;
+        }
+        
+        .medium-scale {
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .large-scale {
+            border-left: 4px solid #ef4444;
+        }
+        
+        .enterprise-scale {
+            border-left: 4px solid #8b5cf6;
+        }
+        
+        .optimization-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+        
+        .opt-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .opt-card:hover {
+            border-color: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .opt-card h3 {
+            color: #1e293b;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .opt-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .opt-card li {
+            padding: 8px 0;
+            color: #64748b;
+            line-height: 1.5;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .opt-card li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #4f46e5;
+            font-weight: bold;
+        }
+        
+        .calculator-integration {
+            margin-top: 40px;
+            max-width: 600px;
+        }
+        
         @media (max-width: 1200px) {
             .main-content {
                 grid-template-columns: 1fr 1fr;
@@ -389,7 +502,7 @@
     <div class="container">
         <div class="header">
             <h1>Enhanced Performance Testing Calculator</h1>
-            <p>Calculate VUs & Thresholds with Detailed Field Explanations</p>
+            <p>Calculate VUs, Thresholds & Infrastructure Specifications</p>
         </div>
         
         <div class="mode-selector">
@@ -399,6 +512,9 @@
                 </button>
                 <button class="mode-btn" id="singleApiBtn" onclick="switchMode('singleApi')">
                     Single API Testing
+                </button>
+                <button class="mode-btn" id="infraBtn" onclick="switchMode('infrastructure')">
+                    Infrastructure Specs
                 </button>
             </div>
         </div>
@@ -710,7 +826,7 @@
                 </div>
             </div>
             
-            <div class="methodology">
+            <div class="methodology" id="methodologySection">
                 <h3>Calculation Methods & Formulas</h3>
                 
                 <div class="method-grid">
@@ -748,6 +864,123 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Infrastructure Specifications Section -->
+        <div class="infrastructure-content" id="infrastructureContent" style="display: none;">
+            <div class="infra-section">
+                <h2 class="section-title">VM Attacker (Load Generator) Specifications</h2>
+                <p style="margin-bottom: 30px; color: #64748b; line-height: 1.6;">
+                    The VM attacker generates load against the application being tested. Specifications scale based on concurrent users being simulated.
+                </p>
+                
+                <div class="specs-table-container">
+                    <table class="specs-table">
+                        <thead>
+                            <tr>
+                                <th>Concurrent Users</th>
+                                <th>CPU Cores</th>
+                                <th>RAM</th>
+                                <th>Network</th>
+                                <th>Storage</th>
+                                <th>Operating System</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="spec-row small-scale">
+                                <td><strong>&lt; 1,000</strong></td>
+                                <td>4 cores</td>
+                                <td>8 GB</td>
+                                <td>1 Gbps</td>
+                                <td>50 GB SSD</td>
+                                <td>Linux (Ubuntu/CentOS)</td>
+                            </tr>
+                            <tr class="spec-row medium-scale">
+                                <td><strong>1,000 - 10,000</strong></td>
+                                <td>8 cores</td>
+                                <td>16 GB</td>
+                                <td>1 Gbps</td>
+                                <td>100 GB SSD</td>
+                                <td>Linux (Ubuntu/CentOS)</td>
+                            </tr>
+                            <tr class="spec-row medium-scale">
+                                <td><strong>10,000 - 50,000</strong></td>
+                                <td>16 cores</td>
+                                <td>32 GB</td>
+                                <td>10 Gbps</td>
+                                <td>200 GB SSD</td>
+                                <td>Linux (Ubuntu/CentOS)</td>
+                            </tr>
+                            <tr class="spec-row large-scale">
+                                <td><strong>50,000 - 100,000</strong></td>
+                                <td>32 cores</td>
+                                <td>64 GB</td>
+                                <td>10 Gbps</td>
+                                <td>250 GB SSD</td>
+                                <td>Linux (Ubuntu/CentOS)</td>
+                            </tr>
+                            <tr class="spec-row enterprise-scale">
+                                <td><strong>&gt; 100,000</strong></td>
+                                <td>64+ cores</td>
+                                <td>128 GB+</td>
+                                <td>25+ Gbps</td>
+                                <td>500 GB+ SSD</td>
+                                <td>Linux (Ubuntu/CentOS)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="optimization-cards">
+                    <div class="opt-card">
+                        <h3>Network Optimizations</h3>
+                        <ul>
+                            <li>Use separate NIC for test traffic generation</li>
+                            <li>Increase TCP buffer sizes</li>
+                            <li>Adjust network interface queue lengths</li>
+                            <li>Optimize TCP parameters (keepalive, backlog)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="opt-card">
+                        <h3>Monitoring Metrics</h3>
+                        <ul>
+                            <li>Network saturation levels</li>
+                            <li>CPU utilization patterns</li>
+                            <li>Memory usage trends</li>
+                            <li>Load average statistics</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="opt-card">
+                        <h3>High-Load Considerations</h3>
+                        <ul>
+                            <li>For &gt;100K users: distribute across multiple VMs</li>
+                            <li>Implement horizontal scaling strategies</li>
+                            <li>Use container orchestration (K8s/Docker)</li>
+                            <li>Monitor client-side resource constraints</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="calculator-integration">
+                    <div class="result-card">
+                        <div class="result-title">Based on Your Current Test</div>
+                        <div class="metric">
+                            <span class="metric-label">Calculated VUs:</span>
+                            <span class="metric-value highlight" id="currentVUs">-</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Recommended VM Spec:</span>
+                            <span class="metric-value" id="recommendedSpec">Calculate VUs first</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Estimated Costs:</span>
+                            <span class="metric-value" id="estimatedCosts">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -759,13 +992,30 @@
             // Update button states
             document.getElementById('endToEndBtn').classList.toggle('active', mode === 'endToEnd');
             document.getElementById('singleApiBtn').classList.toggle('active', mode === 'singleApi');
+            document.getElementById('infraBtn').classList.toggle('active', mode === 'infrastructure');
             
-            // Show/hide relevant input fields
-            document.getElementById('sessionDurationGroup').style.display = mode === 'endToEnd' ? 'block' : 'none';
-            document.getElementById('apiCallsGroup').style.display = mode === 'endToEnd' ? 'block' : 'none';
-            document.getElementById('apiResponseTimeGroup').style.display = mode === 'singleApi' ? 'block' : 'none';
+            // Show/hide content sections
+            const mainContent = document.querySelector('.main-content');
+            const infraContent = document.getElementById('infrastructureContent');
+            const methodologySection = document.getElementById('methodologySection');
             
-            calculateVU();
+            if (mode === 'infrastructure') {
+                mainContent.style.display = 'none';
+                infraContent.style.display = 'block';
+                methodologySection.style.display = 'none';
+                updateInfrastructureRecommendations();
+            } else {
+                mainContent.style.display = 'grid';
+                infraContent.style.display = 'none';
+                methodologySection.style.display = 'block';
+                
+                // Show/hide relevant input fields for testing modes
+                document.getElementById('sessionDurationGroup').style.display = mode === 'endToEnd' ? 'block' : 'none';
+                document.getElementById('apiCallsGroup').style.display = mode === 'endToEnd' ? 'block' : 'none';
+                document.getElementById('apiResponseTimeGroup').style.display = mode === 'singleApi' ? 'block' : 'none';
+                
+                calculateVU();
+            }
         }
         
         function toggleInputFields() {
@@ -968,6 +1218,60 @@
             
             document.getElementById('levelsFormula').innerHTML = 
                 `Conservative: ${conservativeVU} VUs (70%)<br>Comprehensive: ${comprehensiveVU} VUs (100%)<br>Load: ${loadTestingVU} VUs (120%)<br>Stress: ${stressTestingVU} VUs (150%)`;
+            
+            // Update infrastructure recommendations if visible
+            updateInfrastructureRecommendations();
+        }
+        
+        function updateInfrastructureRecommendations() {
+            const inputType = document.getElementById('inputType').value;
+            const sessionDuration = parseInt(document.getElementById('sessionDuration').value) || 175;
+            
+            let peakTPS, comprehensiveVU;
+            
+            // Recalculate VU for infrastructure display
+            if (inputType === 'daily') {
+                const dailyTransactions = parseInt(document.getElementById('dailyTransactions').value) || 200000;
+                peakTPS = (dailyTransactions * 0.15) / 3600;
+            } else if (inputType === 'monthly') {
+                const monthlyTransactions = parseInt(document.getElementById('monthlyTransactions').value) || 6000000;
+                const dailyTransactions = monthlyTransactions / 30;
+                peakTPS = (dailyTransactions * 0.15) / 3600;
+            } else if (inputType === 'userBase') {
+                const userBase = parseInt(document.getElementById('userBase').value) || 200000;
+                const dailyTransactions = userBase * 1;
+                peakTPS = (dailyTransactions * 0.15) / 3600;
+            } else if (inputType === 'tps') {
+                peakTPS = parseFloat(document.getElementById('directTPS').value) || 8.3;
+            } else if (inputType === 'vus') {
+                const targetVUs = parseInt(document.getElementById('directVUS').value) || 500;
+                peakTPS = targetVUs / sessionDuration;
+            }
+            
+            comprehensiveVU = Math.round(peakTPS * sessionDuration);
+            
+            // Determine VM specifications
+            let vmSpec, estimatedCost;
+            if (comprehensiveVU < 1000) {
+                vmSpec = "4 cores, 8GB RAM, 1 Gbps, 50GB SSD";
+                estimatedCost = "$200-400/month";
+            } else if (comprehensiveVU < 10000) {
+                vmSpec = "8 cores, 16GB RAM, 1 Gbps, 100GB SSD";
+                estimatedCost = "$400-800/month";
+            } else if (comprehensiveVU < 50000) {
+                vmSpec = "16 cores, 32GB RAM, 10 Gbps, 200GB SSD";
+                estimatedCost = "$800-1,600/month";
+            } else if (comprehensiveVU < 100000) {
+                vmSpec = "32 cores, 64GB RAM, 10 Gbps, 250GB SSD";
+                estimatedCost = "$1,600-3,200/month";
+            } else {
+                vmSpec = "64+ cores, 128GB+ RAM, 25+ Gbps, 500GB+ SSD (Distributed)";
+                estimatedCost = "$3,200+/month (Multiple VMs)";
+            }
+            
+            document.getElementById('currentVUs').textContent = comprehensiveVU.toLocaleString();
+            document.getElementById('recommendedSpec').textContent = vmSpec;
+            document.getElementById('estimatedCosts').textContent = estimatedCost;
         }
         
         // Initialize on page load
