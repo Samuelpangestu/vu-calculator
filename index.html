@@ -5,497 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Performance Testing Calculator</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-        
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        
-        .mode-selector {
-            background: #f8fafc;
-            padding: 20px;
-            border-bottom: 1px solid #e2e8f0;
-            text-align: center;
-        }
-        
-        .mode-buttons {
-            display: inline-flex;
-            background: #e2e8f0;
-            border-radius: 10px;
-            padding: 4px;
-        }
-        
-        .mode-btn {
-            padding: 12px 24px;
-            border: none;
-            background: transparent;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        
-        .mode-btn.active {
-            background: #4f46e5;
-            color: white;
-        }
-        
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 30px;
-            padding: 40px;
-        }
-        
-        .input-section {
-            background: #f8fafc;
-            padding: 30px;
-            border-radius: 15px;
-            border: 1px solid #e2e8f0;
-        }
-        
-        .results-section {
-            background: #fefefe;
-            padding: 30px;
-            border-radius: 15px;
-            border: 1px solid #e2e8f0;
-        }
-        
-        .recommendations-section {
-            background: #f0f9ff;
-            padding: 30px;
-            border-radius: 15px;
-            border: 1px solid #e2e8f0;
-        }
-        
-        .section-title {
-            font-size: 1.5rem;
-            margin-bottom: 25px;
-            color: #1e293b;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-        }
-        
-        .section-title::before {
-            content: '';
-            width: 4px;
-            height: 20px;
-            background: #4f46e5;
-            margin-right: 12px;
-            border-radius: 2px;
-        }
-        
-        .input-group {
-            margin-bottom: 20px;
-            position: relative;
-        }
-        
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #374151;
-            cursor: help;
-            position: relative;
-        }
-        
-        .help-icon {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            background: #4f46e5;
-            color: white;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 16px;
-            font-size: 12px;
-            margin-left: 8px;
-            cursor: help;
-            position: relative;
-        }
-        
-        .tooltip {
-            position: absolute;
-            background: #1e293b;
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            line-height: 1.4;
-            width: 300px;
-            bottom: 25px;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-        
-        .tooltip::before {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 6px solid transparent;
-            border-top-color: #1e293b;
-        }
-        
-        .help-icon:hover .tooltip {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-        
-        .input-group input:focus, .input-group select:focus {
-            outline: none;
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-        }
-        
-        .field-explanation {
-            background: #f1f5f9;
-            border-left: 4px solid #4f46e5;
-            padding: 12px;
-            margin-top: 8px;
-            border-radius: 0 6px 6px 0;
-            font-size: 0.9rem;
-            color: #475569;
-            line-height: 1.4;
-        }
-        
-        .calculate-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 20px;
-        }
-        
-        .calculate-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3);
-        }
-        
-        .result-card {
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-        
-        .result-card:hover {
-            border-color: #4f46e5;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        }
-        
-        .result-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #1e293b;
-        }
-        
-        .calculation-card {
-            border-left: 4px solid #8b5cf6;
-        }
-        
-        .conservative {
-            border-left: 4px solid #10b981;
-        }
-        
-        .comprehensive {
-            border-left: 4px solid #f59e0b;
-        }
-        
-        .recommendation {
-            border-left: 4px solid #3b82f6;
-        }
-        
-        .metric {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            padding: 8px 0;
-            border-bottom: 1px solid #f1f5f9;
-        }
-        
-        .metric:last-child {
-            border-bottom: none;
-        }
-        
-        .metric-label {
-            font-weight: 500;
-            color: #64748b;
-        }
-        
-        .metric-value {
-            font-weight: 700;
-            color: #1e293b;
-            font-size: 1.1rem;
-        }
-        
-        .highlight {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 6px;
-        }
-        
-        .formula-display {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 12px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            color: #1e293b;
-            margin: 8px 0;
-        }
-        
-        .methodology {
-            background: #f1f5f9;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            grid-column: 1 / -1;
-        }
-        
-        .methodology h3 {
-            color: #1e293b;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-        }
-        
-        .method-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 15px;
-        }
-        
-        .method-card {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #4f46e5;
-        }
-        
-        .method-title {
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 8px;
-        }
-        
-        .method-formula {
-            font-family: 'Courier New', monospace;
-            background: #f8fafc;
-            padding: 8px;
-            border-radius: 4px;
-            margin: 8px 0;
-            font-size: 0.9rem;
-        }
-        
-        .method-description {
-            color: #64748b;
-            font-size: 0.9rem;
-            line-height: 1.4;
-        }
-        
-        /* Infrastructure Specifications Styles */
-        .infrastructure-content {
-            padding: 40px;
-        }
-        
-        .infra-section {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-        
-        .specs-table-container {
-            overflow-x: auto;
-            margin: 30px 0;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        
-        .specs-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            font-size: 0.9rem;
-        }
-        
-        .specs-table th {
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-            color: white;
-            padding: 16px 12px;
-            text-align: left;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        
-        .specs-table td {
-            padding: 14px 12px;
-            border-bottom: 1px solid #e2e8f0;
-            vertical-align: top;
-        }
-        
-        .spec-row:hover {
-            background: #f8fafc;
-        }
-        
-        .small-scale {
-            border-left: 4px solid #10b981;
-        }
-        
-        .medium-scale {
-            border-left: 4px solid #f59e0b;
-        }
-        
-        .large-scale {
-            border-left: 4px solid #ef4444;
-        }
-        
-        .enterprise-scale {
-            border-left: 4px solid #8b5cf6;
-        }
-        
-        .optimization-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            margin: 40px 0;
-        }
-        
-        .opt-card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            border: 2px solid #e2e8f0;
-            transition: all 0.3s ease;
-        }
-        
-        .opt-card:hover {
-            border-color: #4f46e5;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        }
-        
-        .opt-card h3 {
-            color: #1e293b;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-        
-        .opt-card ul {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .opt-card li {
-            padding: 8px 0;
-            color: #64748b;
-            line-height: 1.5;
-            position: relative;
-            padding-left: 20px;
-        }
-        
-        .opt-card li::before {
-            content: '→';
-            position: absolute;
-            left: 0;
-            color: #4f46e5;
-            font-weight: bold;
-        }
-        
-        .calculator-integration {
-            margin-top: 40px;
-            max-width: 600px;
-        }
-        
-        @media (max-width: 1200px) {
-            .main-content {
-                grid-template-columns: 1fr 1fr;
-                gap: 20px;
-                padding: 20px;
-            }
-            .recommendations-section {
-                grid-column: 1 / -1;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-                gap: 20px;
-                padding: 20px;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .tooltip {
-                width: 250px;
-            }
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1600px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; padding: 30px; text-align: center; }
+        .header h1 { font-size: 2.5rem; margin-bottom: 10px; font-weight: 700; }
+        .header p { font-size: 1.1rem; opacity: 0.9; }
+        .mode-selector { background: #f8fafc; padding: 20px; border-bottom: 1px solid #e2e8f0; text-align: center; }
+        .mode-buttons { display: inline-flex; background: #e2e8f0; border-radius: 10px; padding: 4px; flex-wrap: wrap; justify-content: center; gap: 4px; }
+        .mode-btn { padding: 12px 24px; border: none; background: transparent; border-radius: 8px; cursor: pointer; font-weight: 500; transition: all 0.3s ease; }
+        .mode-btn.active { background: #4f46e5; color: white; }
+        .main-content { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; padding: 40px; }
+        .input-section, .results-section, .recommendations-section { padding: 30px; border-radius: 15px; border: 1px solid #e2e8f0; }
+        .input-section { background: #f8fafc; }
+        .results-section { background: #fefefe; }
+        .recommendations-section { background: #f0f9ff; }
+        .section-title { font-size: 1.5rem; margin-bottom: 25px; color: #1e293b; font-weight: 600; display: flex; align-items: center; }
+        .section-title::before { content: ''; width: 4px; height: 20px; background: #4f46e5; margin-right: 12px; border-radius: 2px; }
+        .input-group { margin-bottom: 20px; position: relative; }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: 500; color: #374151; }
+        .help-icon { display: inline-block; width: 16px; height: 16px; background: #4f46e5; color: white; border-radius: 50%; text-align: center; line-height: 16px; font-size: 12px; margin-left: 8px; cursor: help; position: relative; }
+        .tooltip { position: absolute; background: #1e293b; color: white; padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.4; width: 300px; bottom: 25px; left: 50%; transform: translateX(-50%); opacity: 0; visibility: hidden; transition: all 0.3s ease; z-index: 1000; }
+        .help-icon:hover .tooltip { opacity: 1; visibility: visible; }
+        .input-group input, .input-group select { width: 100%; padding: 12px 16px; border: 2px solid #d1d5db; border-radius: 8px; font-size: 16px; transition: all 0.3s ease; }
+        .input-group input:focus, .input-group select:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        .field-explanation { background: #f1f5f9; border-left: 4px solid #4f46e5; padding: 12px; margin-top: 8px; border-radius: 0 6px 6px 0; font-size: 0.9rem; color: #475569; line-height: 1.4; }
+        .calculate-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; margin-top: 20px; }
+        .calculate-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(79, 70, 229, 0.3); }
+        .result-card { background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 20px; transition: all 0.3s ease; }
+        .result-card:hover { border-color: #4f46e5; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .result-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 15px; color: #1e293b; }
+        .calculation-card { border-left: 4px solid #8b5cf6; }
+        .conservative { border-left: 4px solid #10b981; }
+        .comprehensive { border-left: 4px solid #f59e0b; }
+        .recommendation { border-left: 4px solid #3b82f6; }
+        .metric { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
+        .metric:last-child { border-bottom: none; }
+        .metric-label { font-weight: 500; color: #64748b; }
+        .metric-value { font-weight: 700; color: #1e293b; font-size: 1.1rem; }
+        .highlight { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; padding: 4px 8px; border-radius: 6px; }
+        .formula-display { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; font-family: monospace; font-size: 0.9rem; color: #1e293b; margin: 8px 0; }
+        .methodology { background: #f1f5f9; padding: 20px; border-radius: 10px; margin-top: 20px; grid-column: 1 / -1; }
+        .methodology h3 { color: #1e293b; margin-bottom: 15px; font-size: 1.3rem; }
+        .method-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 15px; }
+        .method-card { background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #4f46e5; }
+        .method-title { font-weight: 600; color: #1e293b; margin-bottom: 8px; }
+        .method-formula { font-family: monospace; background: #f8fafc; padding: 8px; border-radius: 4px; margin: 8px 0; font-size: 0.9rem; }
+        .method-description { color: #64748b; font-size: 0.9rem; line-height: 1.4; }
+        /* Infrastructure & References Styles */
+        .infrastructure-content, .references-content { padding: 40px; display: none; }
+        .infra-section, .references-section { max-width: 1400px; margin: 0 auto; }
+        .specs-table-container { overflow-x: auto; margin: 30px 0; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .specs-table { width: 100%; border-collapse: collapse; background: white; font-size: 0.9rem; }
+        .specs-table th { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; padding: 16px 12px; text-align: left; font-weight: 600; }
+        .specs-table td { padding: 14px 12px; border-bottom: 1px solid #e2e8f0; }
+        .spec-row:hover { background: #f8fafc; }
+        .small-scale { border-left: 4px solid #10b981; }
+        .medium-scale { border-left: 4px solid #f59e0b; }
+        .large-scale { border-left: 4px solid #ef4444; }
+        .enterprise-scale { border-left: 4px solid #8b5cf6; }
+        .optimization-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; margin: 40px 0; }
+        .opt-card { background: white; padding: 25px; border-radius: 12px; border: 2px solid #e2e8f0; transition: all 0.3s ease; }
+        .opt-card:hover { border-color: #4f46e5; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
+        .opt-card h3 { color: #1e293b; margin-bottom: 15px; font-size: 1.2rem; }
+        .opt-card ul { list-style: none; padding: 0; }
+        .opt-card li { padding: 8px 0; color: #64748b; line-height: 1.5; padding-left: 20px; position: relative; }
+        .opt-card li::before { content: '→'; position: absolute; left: 0; color: #4f46e5; font-weight: bold; }
+        .calculator-integration { margin-top: 40px; max-width: 600px; }
+        /* References Specific */
+        .references-intro { background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); padding: 25px; border-radius: 12px; margin-bottom: 30px; border-left: 4px solid #0ea5e9; }
+        .references-intro p { color: #0c4a6e; font-size: 1rem; line-height: 1.6; }
+        .reference-category { margin-bottom: 40px; }
+        .category-title { font-size: 1.4rem; color: #1e293b; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e2e8f0; display: flex; align-items: center; }
+        .category-title .icon { width: 32px; height: 32px; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px; color: white; font-size: 16px; }
+        .reference-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px; }
+        .ref-card { background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; transition: all 0.3s ease; position: relative; overflow: hidden; }
+        .ref-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); }
+        .ref-card:hover { border-color: #4f46e5; transform: translateY(-3px); box-shadow: 0 10px 30px rgba(79, 70, 229, 0.15); }
+        .ref-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .ref-card-title { font-size: 1.1rem; font-weight: 600; color: #1e293b; flex: 1; padding-right: 10px; line-height: 1.4; }
+        .ref-card-badge { background: #f1f5f9; color: #64748b; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; white-space: nowrap; }
+        .ref-card-source { color: #6366f1; font-size: 0.85rem; margin-bottom: 10px; font-weight: 500; }
+        .ref-card-description { color: #64748b; font-size: 0.9rem; line-height: 1.5; margin-bottom: 15px; }
+        .ref-card-formula { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 12px; font-family: monospace; font-size: 0.85rem; color: #334155; margin-bottom: 15px; }
+        .ref-card-link { display: inline-flex; align-items: center; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); color: white; padding: 10px 18px; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 0.9rem; transition: all 0.3s ease; }
+        .ref-card-link:hover { transform: translateX(3px); box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3); }
+        .ref-card-link svg { width: 16px; height: 16px; margin-left: 8px; }
+        .formula-highlight { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 1px solid #f59e0b; border-radius: 8px; padding: 15px; margin: 15px 0; }
+        .formula-highlight-title { font-weight: 600; color: #92400e; margin-bottom: 8px; font-size: 0.9rem; }
+        .formula-highlight-content { font-family: monospace; color: #78350f; font-size: 1rem; }
+        @media (max-width: 1200px) { .main-content { grid-template-columns: 1fr 1fr; gap: 20px; padding: 20px; } .recommendations-section { grid-column: 1 / -1; } .reference-cards { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .main-content { grid-template-columns: 1fr; gap: 20px; padding: 20px; } .header h1 { font-size: 2rem; } .tooltip { width: 250px; } .mode-buttons { flex-direction: column; } .mode-btn { width: 100%; } }
     </style>
 </head>
 <body>
@@ -504,34 +104,19 @@
             <h1>Enhanced Performance Testing Calculator</h1>
             <p>Calculate VUs, Thresholds & Infrastructure Specifications</p>
         </div>
-        
         <div class="mode-selector">
             <div class="mode-buttons">
-                <button class="mode-btn active" id="endToEndBtn" onclick="switchMode('endToEnd')">
-                    End-to-End Testing
-                </button>
-                <button class="mode-btn" id="singleApiBtn" onclick="switchMode('singleApi')">
-                    Single API Testing
-                </button>
-                <button class="mode-btn" id="infraBtn" onclick="switchMode('infrastructure')">
-                    Infrastructure Specs
-                </button>
+                <button class="mode-btn active" id="endToEndBtn" onclick="switchMode('endToEnd')">End-to-End Testing</button>
+                <button class="mode-btn" id="singleApiBtn" onclick="switchMode('singleApi')">Single API Testing</button>
+                <button class="mode-btn" id="infraBtn" onclick="switchMode('infrastructure')">Infrastructure Specs</button>
+                <button class="mode-btn" id="referencesBtn" onclick="switchMode('references')">📚 References</button>
             </div>
         </div>
-        
         <div class="main-content">
             <div class="input-section">
                 <h2 class="section-title">Input Parameters</h2>
-                
                 <div class="input-group">
-                    <label for="inputType">
-                        Input Type:
-                        <span class="help-icon">?
-                            <div class="tooltip">
-                                Choose your data source: Daily/Monthly transactions for business volume, Total User Base for user-centric applications, Direct TPS for technical specifications, or VUs for reverse calculations.
-                            </div>
-                        </span>
-                    </label>
+                    <label for="inputType">Input Type: <span class="help-icon">?<div class="tooltip">Choose your data source for calculations.</div></span></label>
                     <select id="inputType" onchange="toggleInputFields()">
                         <option value="daily">Daily Transactions</option>
                         <option value="monthly">Monthly Transactions</option>
@@ -539,709 +124,482 @@
                         <option value="tps">Direct TPS</option>
                         <option value="vus">Direct VUs</option>
                     </select>
-                    <div class="field-explanation">
-                        This determines which calculation method will be used. Each type uses different formulas to arrive at Peak TPS and Virtual Users.
-                    </div>
+                    <div class="field-explanation">This determines which calculation method will be used.</div>
                 </div>
-                
                 <div id="dailyGroup" class="input-group">
-                    <label for="dailyTransactions">
-                        Daily Transactions:
-                        <span class="help-icon">?
-                            <div class="tooltip">
-                                Total number of transactions your system processes in a typical business day. Used to calculate Peak TPS using the 15% peak hour rule.
-                            </div>
-                        </span>
-                    </label>
+                    <label for="dailyTransactions">Daily Transactions:</label>
                     <input type="number" id="dailyTransactions" placeholder="e.g., 200000" value="200000">
-                    <div class="field-explanation">
-                        <strong>Affects:</strong> Peak TPS calculation (Daily × 15% ÷ 3600). Higher daily volume = higher peak TPS = more VUs needed.
-                    </div>
+                    <div class="field-explanation"><strong>Affects:</strong> Peak TPS calculation (Daily × 15% ÷ 3600).</div>
                 </div>
-                
                 <div id="monthlyGroup" class="input-group" style="display: none;">
-                    <label for="monthlyTransactions">
-                        Monthly Transactions:
-                        <span class="help-icon">?
-                            <div class="tooltip">
-                                Total monthly transaction volume. Will be converted to daily (÷30) then to Peak TPS using industry standard peak hour calculation.
-                            </div>
-                        </span>
-                    </label>
+                    <label for="monthlyTransactions">Monthly Transactions:</label>
                     <input type="number" id="monthlyTransactions" placeholder="e.g., 6000000">
-                    <div class="field-explanation">
-                        <strong>Affects:</strong> Converted to daily transactions (÷30), then Peak TPS calculation. Monthly volume gives broader perspective on system capacity needs.
-                    </div>
                 </div>
-                
                 <div id="userBaseGroup" class="input-group" style="display: none;">
-                    <label for="userBase">
-                        Total User Base:
-                        <span class="help-icon">?
-                            <div class="tooltip">
-                                Total registered/active users in your system. Assumes 1 transaction per user per day on average for baseline calculation.
-                            </div>
-                        </span>
-                    </label>
+                    <label for="userBase">Total User Base:</label>
                     <input type="number" id="userBase" placeholder="e.g., 200000">
-                    <div class="field-explanation">
-                        <strong>Affects:</strong> Estimated daily transactions (1:1 ratio), then Peak TPS. Good for user-centric applications where transaction volume scales with user growth.
-                    </div>
                 </div>
-                
                 <div id="tpsGroup" class="input-group" style="display: none;">
-                    <label for="directTPS">
-                        Peak TPS:
-                        <span class="help-icon">?
-                            <div class="tooltip">
-                                Known peak transactions per second from monitoring data or technical requirements. Bypasses transaction volume calculations.
-                            </div>
-                        </span>
-                    </label>
+                    <label for="directTPS">Peak TPS:</label>
                     <input type="number" id="directTPS" placeholder="e.g., 8.3" step="0.1">
-                    <div class="field-explanation">
-                        <strong>Affects:</strong> Direct input to VU calculation. Skip transaction volume conversion. Use when you have precise TPS requirements from monitoring.
-                    </div>
                 </div>
-
                 <div id="vusGroup" class="input-group" style="display: none;">
-                    <label for="directVUS">
-                        Target VUs:
-                        <span class="help-icon">?
-                            <div class="tooltip">
-                                Known Virtual User requirement. Calculator will reverse-engineer the Peak TPS and daily volume for validation and planning.
-                            </div>
-                        </span>
-                    </label>
+                    <label for="directVUS">Target VUs:</label>
                     <input type="number" id="directVUS" placeholder="e.g., 500" step="1">
-                    <div class="field-explanation">
-                        <strong>Affects:</strong> Reverse calculation to show equivalent TPS and daily volume. Useful for capacity planning when VU targets are predetermined.
-                    </div>
                 </div>
-                
                 <div id="sessionDurationGroup" class="input-group">
-                    <label for="sessionDuration">
-                        Session Duration (seconds):
-                        <span class="help-icon">?
-                            <div class="tooltip">
-                                How long a typical user session lasts from login to logout. Critical for VU calculation using Little's Law (VU = TPS × Session Duration).
-                            </div>
-                        </span>
-                    </label>
+                    <label for="sessionDuration">Session Duration (seconds):</label>
                     <input type="number" id="sessionDuration" value="120" min="10" max="3600" step="1">
-                    <div class="field-explanation">
-                        <strong>Affects:</strong> VU calculation directly (VU = Peak TPS × Session Duration). Longer sessions = more concurrent users. Typical range: 60-600 seconds.
-                         <strong>Default:</strong> 2 minutes.
-
-                    </div>
+                    <div class="field-explanation"><strong>Affects:</strong> VU = Peak TPS × Session Duration. Default: 2 minutes.</div>
                 </div>
-                
                 <div id="apiCallsGroup" class="input-group">
-                    <label for="apiCalls">
-                        API Calls per Session:
-                        <span class="help-icon">?
-                            <div class="tooltip">
-                                Average number of API requests made during one user session. Used to calculate RPS distribution across endpoints.
-                            </div>
-                        </span>
-                    </label>
+                    <label for="apiCalls">API Calls per Session:</label>
                     <input type="number" id="apiCalls" value="1" min="1" max="50">
-                    <div class="field-explanation">
-                        <strong>Affects:</strong> RPS calculation (RPS = VU × API Calls ÷ Session Duration). More API calls per session = higher RPS for same VU count.
-                    </div>
                 </div>
-                
                 <div id="apiResponseTimeGroup" class="input-group" style="display: none;">
-                    <label for="apiResponseTime">
-                        Target API Response Time (ms):
-                        <span class="help-icon">?
-                            <div class="tooltip">
-                                Target response time for the single API being tested. Used to set realistic thresholds for single API performance validation.
-                            </div>
-                        </span>
-                    </label>
+                    <label for="apiResponseTime">Target API Response Time (ms):</label>
                     <input type="number" id="apiResponseTime" value="500" min="100" max="10000" step="50">
-                    <div class="field-explanation">
-                        <strong>Affects:</strong> Performance thresholds in results. Sets Conservative (target) and Comprehensive (150% of target) response time expectations.
-                    </div>
                 </div>
-                
                 <button class="calculate-btn" onclick="calculateVU()">Calculate Performance Metrics</button>
             </div>
-            
             <div class="results-section">
                 <h2 class="section-title">Performance Results</h2>
-                
                 <div class="result-card calculation-card">
                     <div class="result-title">Peak TPS Calculation</div>
-                    <div class="formula-display" id="peakTPSCalculation">
-                        Peak TPS = (Daily Transactions × 15%) ÷ 3600
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Peak TPS:</span>
-                        <span class="metric-value highlight" id="peakTPS">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Daily Transactions:</span>
-                        <span class="metric-value" id="dailyTrans">-</span>
-                    </div>
-                    <div style="font-size: 0.9rem; color: #64748b; margin-top: 10px;">
-                        Based on industry standard: 15% of daily volume occurs during peak hour
-                    </div>
+                    <div class="formula-display" id="peakTPSCalculation">Peak TPS = (Daily Transactions × 15%) ÷ 3600</div>
+                    <div class="metric"><span class="metric-label">Peak TPS:</span><span class="metric-value highlight" id="peakTPS">-</span></div>
+                    <div class="metric"><span class="metric-label">Daily Transactions:</span><span class="metric-value" id="dailyTrans">-</span></div>
+                    <div style="font-size: 0.9rem; color: #64748b; margin-top: 10px;">Based on industry standard: 15% of daily volume occurs during peak hour</div>
                 </div>
-                
                 <div class="result-card calculation-card">
                     <div class="result-title" id="capacityTitle">System Capacity</div>
-                    <div class="formula-display" id="vuCalculation">
-                        VUs = Peak TPS × Session Duration
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label" id="capacityLabel">Concurrent Users:</span>
-                        <span class="metric-value highlight" id="systemCapacity">-</span>
-                    </div>
-                    <div style="font-size: 0.9rem; color: #64748b; margin-top: 10px;" id="capacityDescription">
-                        Using Little's Law: concurrent users needed to sustain peak load
-                    </div>
+                    <div class="formula-display" id="vuCalculation">VUs = Peak TPS × Session Duration</div>
+                    <div class="metric"><span class="metric-label" id="capacityLabel">Concurrent Users:</span><span class="metric-value highlight" id="systemCapacity">-</span></div>
+                    <div style="font-size: 0.9rem; color: #64748b; margin-top: 10px;" id="capacityDescription">Using Little's Law: concurrent users needed to sustain peak load</div>
                 </div>
-                
                 <div class="result-card conservative">
                     <div class="result-title">Conservative Testing (70%)</div>
-                    <div class="metric">
-                        <span class="metric-label">Virtual Users:</span>
-                        <span class="metric-value highlight" id="conservativeVU">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Target RPS:</span>
-                        <span class="metric-value" id="conservativeRPS">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Response Time (p95):</span>
-                        <span class="metric-value" id="conservativeRT">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Error Rate:</span>
-                        <span class="metric-value">< 1%</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">CPU/Memory:</span>
-                        <span class="metric-value">< 60% / < 70%</span>
-                    </div>
-                    <div style="font-size: 0.9rem; color: #64748b; margin-top: 10px;">
-                        Safe load for development and regular testing
-                    </div>
+                    <div class="metric"><span class="metric-label">Virtual Users:</span><span class="metric-value highlight" id="conservativeVU">-</span></div>
+                    <div class="metric"><span class="metric-label">Target RPS:</span><span class="metric-value" id="conservativeRPS">-</span></div>
+                    <div class="metric"><span class="metric-label">Response Time (p95):</span><span class="metric-value" id="conservativeRT">-</span></div>
+                    <div class="metric"><span class="metric-label">Error Rate:</span><span class="metric-value">< 1%</span></div>
                 </div>
-                
                 <div class="result-card comprehensive">
                     <div class="result-title">Comprehensive Testing (100%)</div>
-                    <div class="metric">
-                        <span class="metric-label">Virtual Users:</span>
-                        <span class="metric-value highlight" id="comprehensiveVU">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Target RPS:</span>
-                        <span class="metric-value" id="comprehensiveRPS">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Response Time (p95):</span>
-                        <span class="metric-value" id="comprehensiveRT">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Error Rate:</span>
-                        <span class="metric-value">< 0.1%</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">CPU/Memory:</span>
-                        <span class="metric-value">< 70% / < 80%</span>
-                    </div>
-                    <div style="font-size: 0.9rem; color: #64748b; margin-top: 10px;">
-                        Full peak load for production validation
-                    </div>
+                    <div class="metric"><span class="metric-label">Virtual Users:</span><span class="metric-value highlight" id="comprehensiveVU">-</span></div>
+                    <div class="metric"><span class="metric-label">Target RPS:</span><span class="metric-value" id="comprehensiveRPS">-</span></div>
+                    <div class="metric"><span class="metric-label">Response Time (p95):</span><span class="metric-value" id="comprehensiveRT">-</span></div>
+                    <div class="metric"><span class="metric-label">Error Rate:</span><span class="metric-value">< 0.1%</span></div>
                 </div>
             </div>
-            
             <div class="recommendations-section">
                 <h2 class="section-title">Testing Recommendations</h2>
-                
                 <div class="result-card recommendation">
                     <div class="result-title">Load Testing (120%)</div>
-                    <div class="metric">
-                        <span class="metric-label">Virtual Users:</span>
-                        <span class="metric-value" id="loadTestingVU">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Target RPS:</span>
-                        <span class="metric-value" id="loadTestingRPS">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Duration:</span>
-                        <span class="metric-value">30 minutes</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Purpose:</span>
-                        <span class="metric-value" id="loadPurpose">Business peak validation</span>
-                    </div>
-                    <div style="font-size: 0.9rem; color: #64748b; margin-top: 10px;">
-                        Slightly above expected peak to validate headroom
-                    </div>
+                    <div class="metric"><span class="metric-label">Virtual Users:</span><span class="metric-value" id="loadTestingVU">-</span></div>
+                    <div class="metric"><span class="metric-label">Target RPS:</span><span class="metric-value" id="loadTestingRPS">-</span></div>
+                    <div class="metric"><span class="metric-label">Duration:</span><span class="metric-value">30 minutes</span></div>
+                    <div class="metric"><span class="metric-label">Purpose:</span><span class="metric-value" id="loadPurpose">Business peak validation</span></div>
                 </div>
-                
                 <div class="result-card recommendation">
                     <div class="result-title">Stress Testing (150%)</div>
-                    <div class="metric">
-                        <span class="metric-label">Virtual Users:</span>
-                        <span class="metric-value" id="stressTestingVU">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Target RPS:</span>
-                        <span class="metric-value" id="stressTestingRPS">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Duration:</span>
-                        <span class="metric-value">15-20 minutes</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Purpose:</span>
-                        <span class="metric-value" id="stressPurpose">Breaking point analysis</span>
-                    </div>
-                    <div style="font-size: 0.9rem; color: #64748b; margin-top: 10px;">
-                        Beyond capacity to find system breaking point
-                    </div>
+                    <div class="metric"><span class="metric-label">Virtual Users:</span><span class="metric-value" id="stressTestingVU">-</span></div>
+                    <div class="metric"><span class="metric-label">Target RPS:</span><span class="metric-value" id="stressTestingRPS">-</span></div>
+                    <div class="metric"><span class="metric-label">Duration:</span><span class="metric-value">15-20 minutes</span></div>
+                    <div class="metric"><span class="metric-label">Purpose:</span><span class="metric-value" id="stressPurpose">Breaking point analysis</span></div>
                 </div>
-                
                 <div class="result-card">
                     <div class="result-title">Infrastructure Scale</div>
-                    <div class="metric">
-                        <span class="metric-label">Scale Type:</span>
-                        <span class="metric-value" id="infraScale">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">Memory:</span>
-                        <span class="metric-value" id="memoryReq">-</span>
-                    </div>
-                    <div class="metric">
-                        <span class="metric-label">CPU Cores:</span>
-                        <span class="metric-value" id="cpuCores">-</span>
-                    </div>
-                    <div style="font-size: 0.9rem; color: #64748b; margin-top: 10px;">
-                        Recommended VM attacker specifications
-                    </div>
+                    <div class="metric"><span class="metric-label">Scale Type:</span><span class="metric-value" id="infraScale">-</span></div>
+                    <div class="metric"><span class="metric-label">Memory:</span><span class="metric-value" id="memoryReq">-</span></div>
+                    <div class="metric"><span class="metric-label">CPU Cores:</span><span class="metric-value" id="cpuCores">-</span></div>
                 </div>
             </div>
-            
             <div class="methodology" id="methodologySection">
                 <h3>Calculation Methods & Formulas</h3>
-                
                 <div class="method-grid">
-                    <div class="method-card">
-                        <div class="method-title">Peak TPS Calculation</div>
-                        <div class="method-formula" id="peakTPSFormula">Peak TPS = (Daily × 15%) ÷ 3600</div>
-                        <div class="method-description">
-                            Industry standard: 15% of daily transactions occur during peak hour. Formula converts to transactions per second.
-                        </div>
-                    </div>
-                    
-                    <div class="method-card">
-                        <div class="method-title" id="vuMethodTitle">VU Calculation (Little's Law)</div>
-                        <div class="method-formula" id="vuFormula">VUs = Peak TPS × Session Duration</div>
-                        <div class="method-description" id="vuDescription">
-                            Little's Law: Number of users in system = Arrival rate × Time in system. Core formula for concurrent user capacity.
-                        </div>
-                    </div>
-                    
-                    <div class="method-card">
-                        <div class="method-title">RPS Distribution</div>
-                        <div class="method-formula" id="rpsFormula">RPS = (VU × API Calls) ÷ Session Duration</div>
-                        <div class="method-description" id="rpsDescription">
-                            Distributes user actions across session duration to calculate requests per second load on endpoints.
-                        </div>
-                    </div>
-                    
-                    <div class="method-card">
-                        <div class="method-title">Testing Levels</div>
-                        <div class="method-formula" id="levelsFormula">Conservative: 70% / Comprehensive: 100% / Load: 120% / Stress: 150%</div>
-                        <div class="method-description">
-                            Multiple testing levels: Conservative for development, Comprehensive for validation, Load for headroom, Stress for limits.
-                        </div>
+                    <div class="method-card"><div class="method-title">Peak TPS Calculation</div><div class="method-formula" id="peakTPSFormula">Peak TPS = (Daily × 15%) ÷ 3600</div><div class="method-description">Industry standard: 15% of daily transactions occur during peak hour.</div></div>
+                    <div class="method-card"><div class="method-title" id="vuMethodTitle">VU Calculation (Little's Law)</div><div class="method-formula" id="vuFormula">VUs = Peak TPS × Session Duration</div><div class="method-description" id="vuDescription">Little's Law: N = λ × W. Core formula for concurrent user capacity.</div></div>
+                    <div class="method-card"><div class="method-title">RPS Distribution</div><div class="method-formula" id="rpsFormula">RPS = (VU × API Calls) ÷ Session Duration</div><div class="method-description" id="rpsDescription">Distributes user actions across session duration.</div></div>
+                    <div class="method-card"><div class="method-title">Testing Levels</div><div class="method-formula" id="levelsFormula">Conservative: 70% / Comprehensive: 100% / Load: 120% / Stress: 150%</div><div class="method-description">Multiple testing levels for different scenarios.</div></div>
+                </div>
+            </div>
+        </div>
+        <!-- Infrastructure Section -->
+        <div class="infrastructure-content" id="infrastructureContent">
+            <div class="infra-section">
+                <h2 class="section-title">VM Attacker (Load Generator) Specifications</h2>
+                <p style="margin-bottom: 30px; color: #64748b; line-height: 1.6;">The VM attacker generates load against the application being tested.</p>
+                <div class="specs-table-container">
+                    <table class="specs-table">
+                        <thead><tr><th>Concurrent Users</th><th>CPU Cores</th><th>RAM</th><th>Network</th><th>Storage</th><th>OS</th></tr></thead>
+                        <tbody>
+                            <tr class="spec-row small-scale"><td><strong>&lt; 1,000</strong></td><td>4 cores</td><td>8 GB</td><td>1 Gbps</td><td>50 GB SSD</td><td>Linux</td></tr>
+                            <tr class="spec-row medium-scale"><td><strong>1,000 - 10,000</strong></td><td>8 cores</td><td>16 GB</td><td>1 Gbps</td><td>100 GB SSD</td><td>Linux</td></tr>
+                            <tr class="spec-row medium-scale"><td><strong>10,000 - 50,000</strong></td><td>16 cores</td><td>32 GB</td><td>10 Gbps</td><td>200 GB SSD</td><td>Linux</td></tr>
+                            <tr class="spec-row large-scale"><td><strong>50,000 - 100,000</strong></td><td>32 cores</td><td>64 GB</td><td>10 Gbps</td><td>250 GB SSD</td><td>Linux</td></tr>
+                            <tr class="spec-row enterprise-scale"><td><strong>&gt; 100,000</strong></td><td>64+ cores</td><td>128 GB+</td><td>25+ Gbps</td><td>500 GB+ SSD</td><td>Linux</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="optimization-cards">
+                    <div class="opt-card"><h3>Network Optimizations</h3><ul><li>Use separate NIC for test traffic</li><li>Increase TCP buffer sizes</li><li>Adjust network queue lengths</li><li>Optimize TCP parameters</li></ul></div>
+                    <div class="opt-card"><h3>Monitoring Metrics</h3><ul><li>Network saturation levels</li><li>CPU utilization patterns</li><li>Memory usage trends</li><li>Load average statistics</li></ul></div>
+                    <div class="opt-card"><h3>High-Load Considerations</h3><ul><li>For &gt;100K users: distribute across multiple VMs</li><li>Implement horizontal scaling</li><li>Use container orchestration</li><li>Monitor client-side constraints</li></ul></div>
+                </div>
+                <div class="calculator-integration">
+                    <div class="result-card">
+                        <div class="result-title">Based on Your Current Test</div>
+                        <div class="metric"><span class="metric-label">Calculated VUs:</span><span class="metric-value highlight" id="currentVUs">-</span></div>
+                        <div class="metric"><span class="metric-label">Recommended VM Spec:</span><span class="metric-value" id="recommendedSpec">Calculate VUs first</span></div>
+                        <div class="metric"><span class="metric-label">Estimated Costs:</span><span class="metric-value" id="estimatedCosts">-</span></div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Infrastructure Specifications Section -->
-        <div class="infrastructure-content" id="infrastructureContent" style="display: none;">
-            <div class="infra-section">
-                <h2 class="section-title">VM Attacker (Load Generator) Specifications</h2>
-                <p style="margin-bottom: 30px; color: #64748b; line-height: 1.6;">
-                    The VM attacker generates load against the application being tested. Specifications scale based on concurrent users being simulated.
-                </p>
-                
-                <div class="specs-table-container">
-                    <table class="specs-table">
-                        <thead>
-                            <tr>
-                                <th>Concurrent Users</th>
-                                <th>CPU Cores</th>
-                                <th>RAM</th>
-                                <th>Network</th>
-                                <th>Storage</th>
-                                <th>Operating System</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="spec-row small-scale">
-                                <td><strong>&lt; 1,000</strong></td>
-                                <td>4 cores</td>
-                                <td>8 GB</td>
-                                <td>1 Gbps</td>
-                                <td>50 GB SSD</td>
-                                <td>Linux (Ubuntu/CentOS)</td>
-                            </tr>
-                            <tr class="spec-row medium-scale">
-                                <td><strong>1,000 - 10,000</strong></td>
-                                <td>8 cores</td>
-                                <td>16 GB</td>
-                                <td>1 Gbps</td>
-                                <td>100 GB SSD</td>
-                                <td>Linux (Ubuntu/CentOS)</td>
-                            </tr>
-                            <tr class="spec-row medium-scale">
-                                <td><strong>10,000 - 50,000</strong></td>
-                                <td>16 cores</td>
-                                <td>32 GB</td>
-                                <td>10 Gbps</td>
-                                <td>200 GB SSD</td>
-                                <td>Linux (Ubuntu/CentOS)</td>
-                            </tr>
-                            <tr class="spec-row large-scale">
-                                <td><strong>50,000 - 100,000</strong></td>
-                                <td>32 cores</td>
-                                <td>64 GB</td>
-                                <td>10 Gbps</td>
-                                <td>250 GB SSD</td>
-                                <td>Linux (Ubuntu/CentOS)</td>
-                            </tr>
-                            <tr class="spec-row enterprise-scale">
-                                <td><strong>&gt; 100,000</strong></td>
-                                <td>64+ cores</td>
-                                <td>128 GB+</td>
-                                <td>25+ Gbps</td>
-                                <td>500 GB+ SSD</td>
-                                <td>Linux (Ubuntu/CentOS)</td>
-                            </tr>
-                        </tbody>
-                    </table>
+        <!-- References Section -->
+        <div class="references-content" id="referencesContent">
+            <div class="references-section">
+                <h2 class="section-title">References & Sources</h2>
+                <div class="references-intro">
+                    <p><strong>📖 About These References:</strong> This calculator is built upon established performance testing methodologies, industry-standard formulas, and best practices from recognized sources. Click on any reference to learn more.</p>
                 </div>
-                
-                <div class="optimization-cards">
-                    <div class="opt-card">
-                        <h3>Network Optimizations</h3>
-                        <ul>
-                            <li>Use separate NIC for test traffic generation</li>
-                            <li>Increase TCP buffer sizes</li>
-                            <li>Adjust network interface queue lengths</li>
-                            <li>Optimize TCP parameters (keepalive, backlog)</li>
-                        </ul>
+                <!-- Little's Law Section -->
+                <div class="reference-category">
+                    <h3 class="category-title"><span class="icon">📐</span>Little's Law & VU Calculation</h3>
+                    <div class="formula-highlight">
+                        <div class="formula-highlight-title">Core Formula Used:</div>
+                        <div class="formula-highlight-content">N = λ × W → VUs = TPS × (Response Time + Think Time)</div>
                     </div>
-                    
-                    <div class="opt-card">
-                        <h3>Monitoring Metrics</h3>
-                        <ul>
-                            <li>Network saturation levels</li>
-                            <li>CPU utilization patterns</li>
-                            <li>Memory usage trends</li>
-                            <li>Load average statistics</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="opt-card">
-                        <h3>High-Load Considerations</h3>
-                        <ul>
-                            <li>For &gt;100K users: distribute across multiple VMs</li>
-                            <li>Implement horizontal scaling strategies</li>
-                            <li>Use container orchestration (K8s/Docker)</li>
-                            <li>Monitor client-side resource constraints</li>
-                        </ul>
+                    <div class="reference-cards">
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">Little's Law in Performance Testing</div><span class="ref-card-badge">Primary</span></div>
+                            <div class="ref-card-source">PerfMatrix</div>
+                            <div class="ref-card-description">Comprehensive explanation of Little's Law application in performance testing with extended formulas for workload modeling.</div>
+                            <div class="ref-card-formula">N = TPS × (RT + TT + Pacing)</div>
+                            <a href="https://www.perfmatrix.com/littles-law-in-performance-testing/" target="_blank" class="ref-card-link">Read Article <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">SPE Body of Knowledge - Little's Law</div><span class="ref-card-badge">Academic</span></div>
+                            <div class="ref-card-source">Practical Performance Analyst</div>
+                            <div class="ref-card-description">Academic perspective on Little's Law fundamentals with validation examples for performance testing results.</div>
+                            <div class="ref-card-formula">N = [Rt + Zt] × X</div>
+                            <a href="https://tangowhisky37.github.io/PracticalPerformanceAnalyst/pages/spe_fundamentals/what_is_littles_law/" target="_blank" class="ref-card-link">Read Article <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">Little's Law and Performance Testing</div><span class="ref-card-badge">Tutorial</span></div>
+                            <div class="ref-card-source">WhaTap Blog</div>
+                            <div class="ref-card-description">Clear explanation of Little's Law formula with concurrent users calculation including think time considerations.</div>
+                            <a href="https://www.whatap.io/bbs/board.php?bo_table=blog_en&wr_id=47" target="_blank" class="ref-card-link">Read Article <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">Application of Little's Law to Workload Models</div><span class="ref-card-badge">JMeter</span></div>
+                            <div class="ref-card-source">Vinsguru</div>
+                            <div class="ref-card-description">Practical application using Google Analytics data to create realistic JMeter workload models.</div>
+                            <a href="https://www.vinsguru.com/jmeter-performance-testing-application-of-littles-law-to-workload-models/" target="_blank" class="ref-card-link">Read Article <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
                     </div>
                 </div>
-                
-                <div class="calculator-integration">
-                    <div class="result-card">
-                        <div class="result-title">Based on Your Current Test</div>
-                        <div class="metric">
-                            <span class="metric-label">Calculated VUs:</span>
-                            <span class="metric-value highlight" id="currentVUs">-</span>
+                <!-- TPS & Throughput Section -->
+                <div class="reference-category">
+                    <h3 class="category-title"><span class="icon">⚡</span>TPS & Throughput Calculation</h3>
+                    <div class="reference-cards">
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">TPS Calculator</div><span class="ref-card-badge">Tool</span></div>
+                            <div class="ref-card-source">PerfMatrix</div>
+                            <div class="ref-card-description">Interactive calculator for Transaction Per Second estimation based on workload modeling parameters.</div>
+                            <a href="https://www.perfmatrix.com/tps-calculator/" target="_blank" class="ref-card-link">Open Calculator <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
                         </div>
-                        <div class="metric">
-                            <span class="metric-label">Recommended VM Spec:</span>
-                            <span class="metric-value" id="recommendedSpec">Calculate VUs first</span>
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">How to Calculate Transactions Per Second</div><span class="ref-card-badge">Guide</span></div>
+                            <div class="ref-card-source">PFLB</div>
+                            <div class="ref-card-description">Comprehensive guide on TPS calculation methodologies including sustained vs spike TPS testing approaches.</div>
+                            <a href="https://pflb.us/glossary/transactions-per-second-tps/" target="_blank" class="ref-card-link">Read Guide <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
                         </div>
-                        <div class="metric">
-                            <span class="metric-label">Estimated Costs:</span>
-                            <span class="metric-value" id="estimatedCosts">-</span>
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">Throughput in Performance Testing</div><span class="ref-card-badge">Overview</span></div>
+                            <div class="ref-card-source">BrowserStack</div>
+                            <div class="ref-card-description">Detailed explanation of throughput metrics and steps to determine maximum throughput in performance testing.</div>
+                            <a href="https://www.browserstack.com/guide/throughput-in-performance-testing" target="_blank" class="ref-card-link">Read Guide <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">Performance Testing Terminologies</div><span class="ref-card-badge">Glossary</span></div>
+                            <div class="ref-card-source">PerfMatrix</div>
+                            <div class="ref-card-description">Complete glossary including TPS, TPH, iterations, response time, throughput, and other essential metrics.</div>
+                            <a href="https://www.perfmatrix.com/performance-testing-terminologies/" target="_blank" class="ref-card-link">Read Glossary <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Virtual Users Section -->
+                <div class="reference-category">
+                    <h3 class="category-title"><span class="icon">👥</span>Virtual Users & Concurrency</h3>
+                    <div class="reference-cards">
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">Virtual User Calculator</div><span class="ref-card-badge">Tool</span></div>
+                            <div class="ref-card-source">PerfMatrix</div>
+                            <div class="ref-card-description">Calculator for determining Virtual Users (LoadRunner) or Threads (JMeter) needed based on transaction requirements.</div>
+                            <a href="https://www.perfmatrix.com/virtual-user-calculator/" target="_blank" class="ref-card-link">Open Calculator <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">Key Concepts for Azure Load Testing</div><span class="ref-card-badge">Microsoft</span></div>
+                            <div class="ref-card-source">Microsoft Learn</div>
+                            <div class="ref-card-description">Official Microsoft documentation covering virtual users, RPS calculation, ramp-up, and load testing concepts.</div>
+                            <div class="ref-card-formula">VUs = RPS × Latency (in seconds)</div>
+                            <a href="https://learn.microsoft.com/en-us/azure/app-testing/load-testing/concept-load-testing-concepts" target="_blank" class="ref-card-link">Read Docs <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">Concurrent Users, RPS, and TPS</div><span class="ref-card-badge">Alibaba</span></div>
+                            <div class="ref-card-source">Alibaba Cloud</div>
+                            <div class="ref-card-description">Alibaba's explanation of the relationship between concurrent users, RPS, and TPS in performance testing.</div>
+                            <a href="https://www.alibabacloud.com/help/en/pts/performance-test-pts-3-0/product-overview/interpretation-of-concurrent-users-rps-and-tps" target="_blank" class="ref-card-link">Read Docs <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">What Is Virtual User Simulation</div><span class="ref-card-badge">Guide</span></div>
+                            <div class="ref-card-source">LoadView</div>
+                            <div class="ref-card-description">Guide on virtual user simulation concepts, determining concurrent user requirements, and load testing best practices.</div>
+                            <a href="https://www.loadview-testing.com/learn/virtual-user-simulation/" target="_blank" class="ref-card-link">Read Guide <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Load Testing Tools Section -->
+                <div class="reference-category">
+                    <h3 class="category-title"><span class="icon">🛠️</span>Load Testing Tools & Guides</h3>
+                    <div class="reference-cards">
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">API Load Testing Guide</div><span class="ref-card-badge">k6</span></div>
+                            <div class="ref-card-source">Grafana k6</div>
+                            <div class="ref-card-description">Official k6 guide for API load testing including VU modeling, RPS simulation, and load generator configuration.</div>
+                            <a href="https://k6.io/docs/testing-guides/api-load-testing/" target="_blank" class="ref-card-link">Read Guide <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">Load Testing with JMeter: Complete Guide</div><span class="ref-card-badge">JMeter</span></div>
+                            <div class="ref-card-source">Yuri Kan - QA Lead</div>
+                            <div class="ref-card-description">Comprehensive JMeter guide covering thread groups, virtual users, distributed testing, and CI/CD integration.</div>
+                            <a href="https://yrkan.com/blog/jmeter-load-testing/" target="_blank" class="ref-card-link">Read Guide <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">Gatling vs JMeter: Our Findings</div><span class="ref-card-badge">Comparison</span></div>
+                            <div class="ref-card-source">Abstracta</div>
+                            <div class="ref-card-description">Detailed comparison between Gatling and JMeter including resource usage, connection handling, and VU management.</div>
+                            <a href="https://abstracta.us/blog/performance-testing/gatling-vs-jmeter-findings/" target="_blank" class="ref-card-link">Read Comparison <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">k6 vs Gatling Comparison</div><span class="ref-card-badge">Comparison</span></div>
+                            <div class="ref-card-source">Neova Solutions</div>
+                            <div class="ref-card-description">Quick comparison of k6 and Gatling covering architecture differences and use case recommendations.</div>
+                            <a href="https://www.neovasolutions.com/2023/08/10/k6-vs-gatling-a-quick-comparison/" target="_blank" class="ref-card-link">Read Comparison <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Infrastructure Section -->
+                <div class="reference-category">
+                    <h3 class="category-title"><span class="icon">🖥️</span>Infrastructure & Load Generators</h3>
+                    <div class="reference-cards">
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">System Requirements for Large-Scale Load Tests</div><span class="ref-card-badge">SmartBear</span></div>
+                            <div class="ref-card-source">ReadyAPI Documentation</div>
+                            <div class="ref-card-description">Official SmartBear documentation on hardware requirements for load testing and distributed testing recommendations.</div>
+                            <a href="https://support.smartbear.com/readyapi/docs/performance/intro/system-requirements.html" target="_blank" class="ref-card-link">Read Docs <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">What Is a Load Generator</div><span class="ref-card-badge">Overview</span></div>
+                            <div class="ref-card-source">LoadView</div>
+                            <div class="ref-card-description">Comprehensive overview of load generators: types (software, hardware, cloud, hybrid), configuration, and use cases.</div>
+                            <a href="https://www.loadview-testing.com/learn/load-generator/" target="_blank" class="ref-card-link">Read Article <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">Load Testing Calculators</div><span class="ref-card-badge">Tool</span></div>
+                            <div class="ref-card-source">Web Performance</div>
+                            <div class="ref-card-description">Collection of calculators for determining virtual user requirements, test accounts, and data row calculations.</div>
+                            <a href="https://www.webperformance.com/library/tutorials/CalculateNumberOfLoadtestUsers/" target="_blank" class="ref-card-link">Open Calculators <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">Metrics for Performance Tests</div><span class="ref-card-badge">Alibaba</span></div>
+                            <div class="ref-card-source">Alibaba Cloud</div>
+                            <div class="ref-card-description">Guide on performance testing metrics including response time standards by industry and resource utilization thresholds.</div>
+                            <a href="https://www.alibabacloud.com/help/en/pts/performance-test-pts-3-0/product-overview/test-metrics" target="_blank" class="ref-card-link">Read Guide <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Best Practices Section -->
+                <div class="reference-category">
+                    <h3 class="category-title"><span class="icon">✅</span>Best Practices & Methodology</h3>
+                    <div class="reference-cards">
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">Performance Tests Requirements</div><span class="ref-card-badge">Best Practice</span></div>
+                            <div class="ref-card-source">Medium - Suleman</div>
+                            <div class="ref-card-description">Guide on gathering performance testing requirements including peak traffic analysis and test type selection.</div>
+                            <a href="https://sul0089.medium.com/your-performance-tests-are-only-as-good-as-your-requirements-ebf3b0d88426" target="_blank" class="ref-card-link">Read Article <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">WLM (Work Load Modeling)</div><span class="ref-card-badge">Methodology</span></div>
+                            <div class="ref-card-source">PerformanceStack</div>
+                            <div class="ref-card-description">Detailed explanation of workload modeling concepts with practical examples for calculating concurrent users.</div>
+                            <a href="https://performancestack.in/wlm-concept/3/" target="_blank" class="ref-card-link">Read Guide <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">Little's Law for LoadRunner Pacing</div><span class="ref-card-badge">LoadRunner</span></div>
+                            <div class="ref-card-source">DaemonThreads</div>
+                            <div class="ref-card-description">Practical application of Little's Law for calculating pacing values in LoadRunner performance testing.</div>
+                            <a href="https://daemonthreadscom.wordpress.com/load-runner/virtual-user-generator/run-time-setting-in-load-runner/littles-law-in-performance-testing/application-of-littles-law-to-calculate-pacing-in-performance-testing-load-runner/" target="_blank" class="ref-card-link">Read Article <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
+                        </div>
+                        <div class="ref-card">
+                            <div class="ref-card-header"><div class="ref-card-title">Performance Testing for Banking</div><span class="ref-card-badge">Industry</span></div>
+                            <div class="ref-card-source">PFLB</div>
+                            <div class="ref-card-description">Industry-specific guide for banking applications including peak transaction handling and compliance.</div>
+                            <a href="https://pflb.us/blog/banking-applications-performance-testing/" target="_blank" class="ref-card-link">Read Guide <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg></a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
     <script>
         let currentMode = 'endToEnd';
         
         function switchMode(mode) {
             currentMode = mode;
-            
-            // Update button states
             document.getElementById('endToEndBtn').classList.toggle('active', mode === 'endToEnd');
             document.getElementById('singleApiBtn').classList.toggle('active', mode === 'singleApi');
             document.getElementById('infraBtn').classList.toggle('active', mode === 'infrastructure');
+            document.getElementById('referencesBtn').classList.toggle('active', mode === 'references');
             
-            // Show/hide content sections
             const mainContent = document.querySelector('.main-content');
             const infraContent = document.getElementById('infrastructureContent');
+            const referencesContent = document.getElementById('referencesContent');
             const methodologySection = document.getElementById('methodologySection');
             
             if (mode === 'infrastructure') {
                 mainContent.style.display = 'none';
                 infraContent.style.display = 'block';
-                methodologySection.style.display = 'none';
+                referencesContent.style.display = 'none';
                 updateInfrastructureRecommendations();
+            } else if (mode === 'references') {
+                mainContent.style.display = 'none';
+                infraContent.style.display = 'none';
+                referencesContent.style.display = 'block';
             } else {
                 mainContent.style.display = 'grid';
                 infraContent.style.display = 'none';
-                methodologySection.style.display = 'block';
-                
-                // Show/hide relevant input fields for testing modes
+                referencesContent.style.display = 'none';
                 document.getElementById('sessionDurationGroup').style.display = mode === 'endToEnd' ? 'block' : 'none';
                 document.getElementById('apiCallsGroup').style.display = mode === 'endToEnd' ? 'block' : 'none';
                 document.getElementById('apiResponseTimeGroup').style.display = mode === 'singleApi' ? 'block' : 'none';
-                
                 calculateVU();
             }
         }
         
         function toggleInputFields() {
             const inputType = document.getElementById('inputType').value;
-            
-            // Hide all input groups
-            document.getElementById('dailyGroup').style.display = 'none';
-            document.getElementById('monthlyGroup').style.display = 'none';
-            document.getElementById('userBaseGroup').style.display = 'none';
-            document.getElementById('tpsGroup').style.display = 'none';
-            document.getElementById('vusGroup').style.display = 'none';
-            
-            // Show relevant input group
-            if (inputType === 'daily') {
-                document.getElementById('dailyGroup').style.display = 'block';
-            } else if (inputType === 'monthly') {
-                document.getElementById('monthlyGroup').style.display = 'block';
-            } else if (inputType === 'userBase') {
-                document.getElementById('userBaseGroup').style.display = 'block';
-            } else if (inputType === 'tps') {
-                document.getElementById('tpsGroup').style.display = 'block';
-            } else if (inputType === 'vus') {
-                document.getElementById('vusGroup').style.display = 'block';
-            }
-            
+            document.getElementById('dailyGroup').style.display = inputType === 'daily' ? 'block' : 'none';
+            document.getElementById('monthlyGroup').style.display = inputType === 'monthly' ? 'block' : 'none';
+            document.getElementById('userBaseGroup').style.display = inputType === 'userBase' ? 'block' : 'none';
+            document.getElementById('tpsGroup').style.display = inputType === 'tps' ? 'block' : 'none';
+            document.getElementById('vusGroup').style.display = inputType === 'vus' ? 'block' : 'none';
             calculateVU();
         }
         
         function calculateVU() {
             const inputType = document.getElementById('inputType').value;
-            const sessionDuration = parseInt(document.getElementById('sessionDuration').value) || 175;
-            const apiCalls = parseInt(document.getElementById('apiCalls').value) || 10;
+            const sessionDuration = parseInt(document.getElementById('sessionDuration').value) || 120;
+            const apiCalls = parseInt(document.getElementById('apiCalls').value) || 1;
             const apiResponseTime = parseInt(document.getElementById('apiResponseTime').value) || 500;
             
-            let peakTPS, dailyTransactions, monthlyTransactions;
-            
+            let peakTPS, dailyTransactions;
             const PEAK_HOUR_PERCENTAGE = 0.15;
             
-            // Calculate based on input type
             if (inputType === 'daily') {
                 dailyTransactions = parseInt(document.getElementById('dailyTransactions').value) || 200000;
-                monthlyTransactions = dailyTransactions * 30;
-                const peakHourTransactions = dailyTransactions * PEAK_HOUR_PERCENTAGE;
-                peakTPS = peakHourTransactions / 3600;
+                peakTPS = (dailyTransactions * PEAK_HOUR_PERCENTAGE) / 3600;
             } else if (inputType === 'monthly') {
-                monthlyTransactions = parseInt(document.getElementById('monthlyTransactions').value) || 6000000;
+                const monthlyTransactions = parseInt(document.getElementById('monthlyTransactions').value) || 6000000;
                 dailyTransactions = monthlyTransactions / 30;
-                const peakHourTransactions = dailyTransactions * PEAK_HOUR_PERCENTAGE;
-                peakTPS = peakHourTransactions / 3600;
+                peakTPS = (dailyTransactions * PEAK_HOUR_PERCENTAGE) / 3600;
             } else if (inputType === 'userBase') {
                 const userBase = parseInt(document.getElementById('userBase').value) || 200000;
-                dailyTransactions = userBase * 1; // 1 transaction per user per day assumption
-                monthlyTransactions = dailyTransactions * 30;
-                const peakHourTransactions = dailyTransactions * PEAK_HOUR_PERCENTAGE;
-                peakTPS = peakHourTransactions / 3600;
+                dailyTransactions = userBase * 1;
+                peakTPS = (dailyTransactions * PEAK_HOUR_PERCENTAGE) / 3600;
             } else if (inputType === 'tps') {
                 peakTPS = parseFloat(document.getElementById('directTPS').value) || 8.3;
                 dailyTransactions = (peakTPS * 3600) / PEAK_HOUR_PERCENTAGE;
-                monthlyTransactions = dailyTransactions * 30;
             } else if (inputType === 'vus') {
                 const targetVUs = parseInt(document.getElementById('directVUS').value) || 500;
                 peakTPS = targetVUs / sessionDuration;
                 dailyTransactions = (peakTPS * 3600) / PEAK_HOUR_PERCENTAGE;
-                monthlyTransactions = dailyTransactions * 30;
             }
             
-            let maxConcurrentUsers, conservativeVU, comprehensiveVU, conservativeRPS, comprehensiveRPS;
+            const maxConcurrentUsers = Math.round(peakTPS * sessionDuration);
+            const conservativeVU = Math.round(maxConcurrentUsers * 0.7);
+            const comprehensiveVU = Math.round(maxConcurrentUsers * 1.0);
             
+            let conservativeRPS, comprehensiveRPS;
             if (currentMode === 'endToEnd') {
-                // End-to-end testing: VUs = Peak TPS × Session Duration
-                maxConcurrentUsers = Math.round(peakTPS * sessionDuration);
-                conservativeVU = Math.round(maxConcurrentUsers * 0.7);
-                comprehensiveVU = Math.round(maxConcurrentUsers * 1.0);
-                
-                // RPS = (VU × API Calls) ÷ Session Duration
                 conservativeRPS = Math.round((conservativeVU * apiCalls / sessionDuration) * 10) / 10;
                 comprehensiveRPS = Math.round((comprehensiveVU * apiCalls / sessionDuration) * 10) / 10;
-                
                 document.getElementById('capacityLabel').textContent = 'Concurrent Users:';
-                document.getElementById('systemCapacity').textContent = maxConcurrentUsers.toLocaleString();
                 document.getElementById('capacityTitle').textContent = 'System Capacity (End-to-End)';
                 document.getElementById('capacityDescription').textContent = 'Total concurrent users needed for complete user journeys';
             } else {
-                // Single API testing: Focus on API-specific load
-                maxConcurrentUsers = Math.round(peakTPS * sessionDuration);
-                conservativeVU = Math.round(maxConcurrentUsers * 0.7);
-                comprehensiveVU = Math.round(maxConcurrentUsers * 1.0);
-                
-                // For single API: RPS directly targets the API
                 conservativeRPS = Math.round(peakTPS * 0.7 * 10) / 10;
                 comprehensiveRPS = Math.round(peakTPS * 10) / 10;
-                
                 document.getElementById('capacityLabel').textContent = 'VUs for Single API:';
-                document.getElementById('systemCapacity').textContent = comprehensiveVU.toLocaleString();
                 document.getElementById('capacityTitle').textContent = 'API Testing Capacity';
                 document.getElementById('capacityDescription').textContent = 'VUs generating focused load on single API endpoint';
             }
             
-            // Calculate recommendations
+            document.getElementById('systemCapacity').textContent = maxConcurrentUsers.toLocaleString();
+            
             const loadTestingVU = Math.round(conservativeVU * 1.2);
             const stressTestingVU = Math.round(comprehensiveVU * 1.5);
             const loadTestingRPS = Math.round(conservativeRPS * 1.2 * 10) / 10;
             const stressTestingRPS = Math.round(comprehensiveRPS * 1.5 * 10) / 10;
             
-            // Infrastructure requirements
             let infraScale, memoryReq, cpuCores;
-            if (comprehensiveVU < 1000) {
-                infraScale = "Small Scale";
-                memoryReq = "4-8 GB";
-                cpuCores = "2-4 cores";
-            } else if (comprehensiveVU < 10000) {
-                infraScale = "Medium Scale";
-                memoryReq = "16-32 GB";
-                cpuCores = "8-16 cores";
-            } else {
-                infraScale = "Large Scale";
-                memoryReq = "64+ GB";
-                cpuCores = "32+ cores";
-            }
+            if (comprehensiveVU < 1000) { infraScale = "Small Scale"; memoryReq = "4-8 GB"; cpuCores = "2-4 cores"; }
+            else if (comprehensiveVU < 10000) { infraScale = "Medium Scale"; memoryReq = "16-32 GB"; cpuCores = "8-16 cores"; }
+            else { infraScale = "Large Scale"; memoryReq = "64+ GB"; cpuCores = "32+ cores"; }
             
-            // Update Peak TPS Calculation display
-            let peakTPSCalculationText;
-            if (inputType === 'daily') {
-                peakTPSCalculationText = `Peak TPS = (${Math.round(dailyTransactions).toLocaleString()} × 15%) ÷ 3600 = ${peakTPS.toFixed(1)} TPS`;
-            } else if (inputType === 'monthly') {
-                peakTPSCalculationText = `Daily = ${monthlyTransactions.toLocaleString()} ÷ 30 = ${Math.round(dailyTransactions).toLocaleString()}<br>Peak TPS = (${Math.round(dailyTransactions).toLocaleString()} × 15%) ÷ 3600 = ${peakTPS.toFixed(1)} TPS`;
-            } else if (inputType === 'userBase') {
-                const userBase = parseInt(document.getElementById('userBase').value) || 200000;
-                peakTPSCalculationText = `Daily = ${userBase.toLocaleString()} users × 1 trans/user = ${Math.round(dailyTransactions).toLocaleString()}<br>Peak TPS = (${Math.round(dailyTransactions).toLocaleString()} × 15%) ÷ 3600 = ${peakTPS.toFixed(1)} TPS`;
-            } else if (inputType === 'tps') {
-                peakTPSCalculationText = `Peak TPS = ${peakTPS.toFixed(1)} TPS (Direct Input)<br>Equivalent Daily = (${peakTPS.toFixed(1)} × 3600) ÷ 15% = ${Math.round(dailyTransactions).toLocaleString()}`;
-            } else if (inputType === 'vus') {
-                const targetVUs = parseInt(document.getElementById('directVUS').value) || 500;
-                peakTPSCalculationText = `Peak TPS = ${targetVUs} VUs ÷ ${sessionDuration}s = ${peakTPS.toFixed(1)} TPS<br>Equivalent Daily = (${peakTPS.toFixed(1)} × 3600) ÷ 15% = ${Math.round(dailyTransactions).toLocaleString()}`;
-            }
-            
-            document.getElementById('peakTPSCalculation').innerHTML = peakTPSCalculationText;
-            
-            // Update VU Calculation display
-            let vuCalculationText;
-            if (currentMode === 'endToEnd') {
-                vuCalculationText = `VUs = ${peakTPS.toFixed(1)} TPS × ${sessionDuration}s = ${maxConcurrentUsers.toLocaleString()} VUs`;
-            } else {
-                vuCalculationText = `VUs = ${peakTPS.toFixed(1)} TPS × ${sessionDuration}s = ${maxConcurrentUsers.toLocaleString()} VUs<br>(Same calculation, focused on single API)`;
-            }
-            document.getElementById('vuCalculation').innerHTML = vuCalculationText;
-            
-            // Update main display values
+            document.getElementById('peakTPSCalculation').innerHTML = `Peak TPS = (${Math.round(dailyTransactions).toLocaleString()} × 15%) ÷ 3600 = ${peakTPS.toFixed(1)} TPS`;
+            document.getElementById('vuCalculation').innerHTML = `VUs = ${peakTPS.toFixed(1)} TPS × ${sessionDuration}s = ${maxConcurrentUsers.toLocaleString()} VUs`;
             document.getElementById('peakTPS').textContent = peakTPS.toFixed(1) + ' TPS';
             document.getElementById('dailyTrans').textContent = Math.round(dailyTransactions).toLocaleString();
-            
             document.getElementById('conservativeVU').textContent = conservativeVU.toLocaleString();
             document.getElementById('conservativeRPS').textContent = conservativeRPS + ' RPS';
-            document.getElementById('conservativeRT').textContent = currentMode === 'singleApi' ? 
-                '< ' + apiResponseTime + 'ms' : '< 2500ms';
-            
+            document.getElementById('conservativeRT').textContent = currentMode === 'singleApi' ? '< ' + apiResponseTime + 'ms' : '< 2500ms';
             document.getElementById('comprehensiveVU').textContent = comprehensiveVU.toLocaleString();
             document.getElementById('comprehensiveRPS').textContent = comprehensiveRPS + ' RPS';
-            document.getElementById('comprehensiveRT').textContent = currentMode === 'singleApi' ? 
-                '< ' + Math.round(apiResponseTime * 1.5) + 'ms' : '< 3600ms';
-            
+            document.getElementById('comprehensiveRT').textContent = currentMode === 'singleApi' ? '< ' + Math.round(apiResponseTime * 1.5) + 'ms' : '< 3600ms';
             document.getElementById('loadTestingVU').textContent = loadTestingVU.toLocaleString() + ' VU';
             document.getElementById('stressTestingVU').textContent = stressTestingVU.toLocaleString() + ' VU';
             document.getElementById('loadTestingRPS').textContent = loadTestingRPS + ' RPS';
             document.getElementById('stressTestingRPS').textContent = stressTestingRPS + ' RPS';
-            
             document.getElementById('infraScale').textContent = infraScale;
             document.getElementById('memoryReq').textContent = memoryReq;
             document.getElementById('cpuCores').textContent = cpuCores;
             
-            // Update methodology based on mode
-            if (currentMode === 'endToEnd') {
-                document.getElementById('vuMethodTitle').textContent = 'VU Calculation (End-to-End)';
-                document.getElementById('vuDescription').textContent = 'Little\'s Law for complete user journey testing. VUs represent full user sessions from login to logout.';
-                document.getElementById('rpsDescription').textContent = 'Total RPS distributed across all API endpoints in complete user journey workflow.';
-                document.getElementById('loadPurpose').textContent = 'Business peak validation';
-                document.getElementById('stressPurpose').textContent = 'System breaking point';
-            } else {
-                document.getElementById('vuMethodTitle').textContent = 'VU Calculation (Single API)';
-                document.getElementById('vuDescription').textContent = 'Same VU calculation as end-to-end, but RPS concentrated on single API endpoint for focused testing.';
-                document.getElementById('rpsDescription').textContent = 'RPS concentrated on single API endpoint, simulating realistic concurrent access patterns.';
-                document.getElementById('loadPurpose').textContent = 'API peak validation';
-                document.getElementById('stressPurpose').textContent = 'API breaking point';
-            }
+            document.getElementById('peakTPSFormula').innerHTML = `Peak TPS = (${Math.round(dailyTransactions).toLocaleString()} × 15%) ÷ 3600<br>= ${peakTPS.toFixed(1)} requests/second`;
+            document.getElementById('vuFormula').innerHTML = `VUs = ${peakTPS.toFixed(1)} TPS × ${sessionDuration}s<br>= ${maxConcurrentUsers.toLocaleString()} concurrent users`;
+            document.getElementById('rpsFormula').innerHTML = currentMode === 'endToEnd' ? 
+                `RPS = (${comprehensiveVU} VUs × ${apiCalls} calls) ÷ ${sessionDuration}s<br>= ${comprehensiveRPS} requests/second` :
+                `RPS = ${peakTPS.toFixed(1)} TPS (direct to API)<br>= ${comprehensiveRPS} requests/second`;
+            document.getElementById('levelsFormula').innerHTML = `Conservative: ${conservativeVU} VUs (70%)<br>Comprehensive: ${comprehensiveVU} VUs (100%)<br>Load: ${loadTestingVU} VUs (120%)<br>Stress: ${stressTestingVU} VUs (150%)`;
             
-            // Update detailed formulas in methodology
-            document.getElementById('peakTPSFormula').innerHTML = 
-                `Peak TPS = (${Math.round(dailyTransactions).toLocaleString()} × 15%) ÷ 3600<br>= ${peakTPS.toFixed(1)} requests/second`;
-            
-            document.getElementById('vuFormula').innerHTML = 
-                `VUs = ${peakTPS.toFixed(1)} TPS × ${sessionDuration}s<br>= ${maxConcurrentUsers.toLocaleString()} concurrent users`;
-            
-            if (currentMode === 'endToEnd') {
-                document.getElementById('rpsFormula').innerHTML = 
-                    `RPS = (${comprehensiveVU} VUs × ${apiCalls} calls) ÷ ${sessionDuration}s<br>= ${comprehensiveRPS} requests/second`;
-            } else {
-                document.getElementById('rpsFormula').innerHTML = 
-                    `RPS = ${peakTPS.toFixed(1)} TPS (direct to API)<br>= ${comprehensiveRPS} requests/second`;
-            }
-            
-            document.getElementById('levelsFormula').innerHTML = 
-                `Conservative: ${conservativeVU} VUs (70%)<br>Comprehensive: ${comprehensiveVU} VUs (100%)<br>Load: ${loadTestingVU} VUs (120%)<br>Stress: ${stressTestingVU} VUs (150%)`;
-            
-            // Update infrastructure recommendations if visible
             updateInfrastructureRecommendations();
         }
         
         function updateInfrastructureRecommendations() {
             const inputType = document.getElementById('inputType').value;
-            const sessionDuration = parseInt(document.getElementById('sessionDuration').value) || 175;
+            const sessionDuration = parseInt(document.getElementById('sessionDuration').value) || 120;
+            let peakTPS;
             
-            let peakTPS, comprehensiveVU;
-            
-            // Recalculate VU for infrastructure display
             if (inputType === 'daily') {
                 const dailyTransactions = parseInt(document.getElementById('dailyTransactions').value) || 200000;
                 peakTPS = (dailyTransactions * 0.15) / 3600;
             } else if (inputType === 'monthly') {
-                const monthlyTransactions = parseInt(document.getElementById('monthlyTransactions').value) || 6000000;
-                const dailyTransactions = monthlyTransactions / 30;
+                const dailyTransactions = (parseInt(document.getElementById('monthlyTransactions').value) || 6000000) / 30;
                 peakTPS = (dailyTransactions * 0.15) / 3600;
             } else if (inputType === 'userBase') {
-                const userBase = parseInt(document.getElementById('userBase').value) || 200000;
-                const dailyTransactions = userBase * 1;
+                const dailyTransactions = (parseInt(document.getElementById('userBase').value) || 200000);
                 peakTPS = (dailyTransactions * 0.15) / 3600;
             } else if (inputType === 'tps') {
                 peakTPS = parseFloat(document.getElementById('directTPS').value) || 8.3;
@@ -1250,36 +608,21 @@
                 peakTPS = targetVUs / sessionDuration;
             }
             
-            comprehensiveVU = Math.round(peakTPS * sessionDuration);
-            
-            // Determine VM specifications
+            const comprehensiveVU = Math.round(peakTPS * sessionDuration);
             let vmSpec, estimatedCost;
-            if (comprehensiveVU < 1000) {
-                vmSpec = "4 cores, 8GB RAM, 1 Gbps, 50GB SSD";
-                estimatedCost = "$200-400/month";
-            } else if (comprehensiveVU < 10000) {
-                vmSpec = "8 cores, 16GB RAM, 1 Gbps, 100GB SSD";
-                estimatedCost = "$400-800/month";
-            } else if (comprehensiveVU < 50000) {
-                vmSpec = "16 cores, 32GB RAM, 10 Gbps, 200GB SSD";
-                estimatedCost = "$800-1,600/month";
-            } else if (comprehensiveVU < 100000) {
-                vmSpec = "32 cores, 64GB RAM, 10 Gbps, 250GB SSD";
-                estimatedCost = "$1,600-3,200/month";
-            } else {
-                vmSpec = "64+ cores, 128GB+ RAM, 25+ Gbps, 500GB+ SSD (Distributed)";
-                estimatedCost = "$3,200+/month (Multiple VMs)";
-            }
+            
+            if (comprehensiveVU < 1000) { vmSpec = "4 cores, 8GB RAM, 1 Gbps, 50GB SSD"; estimatedCost = "$200-400/month"; }
+            else if (comprehensiveVU < 10000) { vmSpec = "8 cores, 16GB RAM, 1 Gbps, 100GB SSD"; estimatedCost = "$400-800/month"; }
+            else if (comprehensiveVU < 50000) { vmSpec = "16 cores, 32GB RAM, 10 Gbps, 200GB SSD"; estimatedCost = "$800-1,600/month"; }
+            else if (comprehensiveVU < 100000) { vmSpec = "32 cores, 64GB RAM, 10 Gbps, 250GB SSD"; estimatedCost = "$1,600-3,200/month"; }
+            else { vmSpec = "64+ cores, 128GB+ RAM, 25+ Gbps, 500GB+ SSD (Distributed)"; estimatedCost = "$3,200+/month (Multiple VMs)"; }
             
             document.getElementById('currentVUs').textContent = comprehensiveVU.toLocaleString();
             document.getElementById('recommendedSpec').textContent = vmSpec;
             document.getElementById('estimatedCosts').textContent = estimatedCost;
         }
         
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            calculateVU();
-        });
+        document.addEventListener('DOMContentLoaded', function() { calculateVU(); });
     </script>
 </body>
 </html>
