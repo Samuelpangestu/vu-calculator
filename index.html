@@ -118,8 +118,12 @@
                 <button class="mode-btn active" id="endToEndBtn" onclick="switchMode('endToEnd')">End-to-End Testing</button>
                 <button class="mode-btn" id="singleApiBtn" onclick="switchMode('singleApi')">Single API Testing</button>
                 <button class="mode-btn" id="matrixBtn" onclick="switchMode('matrix')">📊 Matrix Guidelines</button>
+                <button class="mode-btn" id="scenariosBtn" onclick="switchMode('scenarios')">📋 Test Scenarios</button>
+                <button class="mode-btn" id="troubleshootBtn" onclick="switchMode('troubleshoot')">🔧 Troubleshooting</button>
+                <button class="mode-btn" id="glossaryBtn" onclick="switchMode('glossary')">📚 Glossary</button>
+                <button class="mode-btn" id="checklistBtn" onclick="switchMode('checklist')">✅ Checklist</button>
                 <button class="mode-btn" id="infraBtn" onclick="switchMode('infrastructure')">Spesifikasi Infrastruktur</button>
-                <button class="mode-btn" id="referencesBtn" onclick="switchMode('references')">📚 Referensi & Panduan</button>
+                <button class="mode-btn" id="referencesBtn" onclick="switchMode('references')">🔗 Referensi</button>
             </div>
         </div>
         <div class="main-content">
@@ -583,6 +587,304 @@
                         📚 <strong>Referensi:</strong> 
                         <a href="https://www.nngroup.com/articles/response-times-3-important-limits/" target="_blank" style="color:var(--accent)">Nielsen Norman Group - Response Times</a> | 
                         <a href="https://www.perfmatrix.com/performance-testing-terminologies/" target="_blank" style="color:var(--accent)">PerfMatrix Terminologies</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Test Scenarios & Templates Section -->
+        <div class="infrastructure-content" id="scenariosContent" style="display:none;padding:40px">
+            <h2 class="section-title">📋 Test Scenarios & Script Templates</h2>
+            <p style="color:var(--text-secondary);margin-bottom:24px">Ready-to-use test scenarios dan script templates untuk berbagai use cases. Copy dan customize sesuai kebutuhan Anda.</p>
+            
+            <!-- Scenario Categories -->
+            <div class="reference-category">
+                <h3 class="category-title"><span class="icon">🛒</span>E-Commerce Test Scenarios</h3>
+                <div class="reference-cards">
+                    <!-- Login Flow -->
+                    <div class="ref-card">
+                        <div class="ref-card-header"><div class="ref-card-title">Login Flow</div><span class="ref-card-badge">K6</span></div>
+                        <div class="ref-card-description">User authentication flow dengan think time realistic.</div>
+                        <div class="ref-card-formula" style="text-align:left;white-space:pre;font-size:0.75rem;overflow-x:auto">import http from 'k6/http';
+import { sleep, check } from 'k6';
+
+export const options = {
+  stages: [
+    { duration: '2m', target: 100 },
+    { duration: '5m', target: 100 },
+    { duration: '2m', target: 0 }
+  ],
+  thresholds: {
+    http_req_duration: ['p(95)<500'],
+    http_req_failed: ['rate<0.01']
+  }
+};
+
+export default function() {
+  // Homepage
+  let res = http.get('https://api.example.com/');
+  check(res, { 'homepage loaded': (r) => r.status === 200 });
+  sleep(3);
+  
+  // Login
+  res = http.post('https://api.example.com/login', {
+    username: 'testuser',
+    password: 'pass123'
+  });
+  check(res, { 'logged in': (r) => r.status === 200 });
+  sleep(2);
+}</div>
+                        <button class="toggle-explanation" onclick="toggleExplanation(this)">📖 Lihat Penjelasan</button>
+                        <div class="collapsible-content">
+                            <div class="ref-card-explanation">
+                                <div class="explanation-content">
+                                    <p><strong>Breakdown Scenario:</strong></p>
+                                    <div class="key-points">
+                                        <div class="key-point"><span class="key-point-icon">→</span><span><strong>Stages:</strong> 2 min ramp-up, 5 min steady, 2 min ramp-down</span></div>
+                                        <div class="key-point"><span class="key-point-icon">→</span><span><strong>Target:</strong> 100 concurrent users</span></div>
+                                        <div class="key-point"><span class="key-point-icon">→</span><span><strong>Thresholds:</strong> p95 < 500ms, error < 1%</span></div>
+                                        <div class="key-point"><span class="key-point-icon">→</span><span><strong>Think Time:</strong> 3s (browsing), 2s (after login)</span></div>
+                                    </div>
+                                    <div class="explanation-highlight">
+                                        <strong>Cara Menjalankan:</strong>
+                                        <p>k6 run login-test.js</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Checkout Flow -->
+                    <div class="ref-card">
+                        <div class="ref-card-header"><div class="ref-card-title">Complete Checkout Flow</div><span class="ref-card-badge">K6</span></div>
+                        <div class="ref-card-description">End-to-end e-commerce: browse → add to cart → checkout → payment.</div>
+                        <div class="ref-card-formula" style="text-align:left;white-space:pre;font-size:0.75rem;overflow-x:auto">import http from 'k6/http';
+import { sleep, check } from 'k6';
+
+export const options = {
+  scenarios: {
+    checkout_flow: {
+      executor: 'ramping-vus',
+      startVUs: 0,
+      stages: [
+        { duration: '3m', target: 50 },
+        { duration: '10m', target: 50 },
+        { duration: '2m', target: 0 }
+      ],
+      gracefulRampDown: '30s'
+    }
+  }
+};
+
+export default function() {
+  // 1. Browse products (40% of time)
+  http.get('https://api.example.com/products');
+  sleep(5);
+  
+  // 2. View product detail
+  http.get('https://api.example.com/products/123');
+  sleep(10);
+  
+  // 3. Add to cart
+  http.post('https://api.example.com/cart', {
+    productId: '123',
+    quantity: 1
+  });
+  sleep(3);
+  
+  // 4. View cart
+  http.get('https://api.example.com/cart');
+  sleep(5);
+  
+  // 5. Checkout
+  http.post('https://api.example.com/checkout', {
+    paymentMethod: 'credit_card'
+  });
+  sleep(15); // Form filling time
+  
+  // 6. Confirm payment
+  let res = http.post('https://api.example.com/payment');
+  check(res, { 'payment success': (r) => r.status === 200 });
+}</div>
+                        <button class="toggle-explanation" onclick="toggleExplanation(this)">📖 Lihat Penjelasan</button>
+                        <div class="collapsible-content">
+                            <div class="ref-card-explanation">
+                                <div class="explanation-content">
+                                    <p><strong>Workload Distribution:</strong></p>
+                                    <div class="key-points">
+                                        <div class="key-point"><span class="key-point-icon">→</span><span>Browse Products: 5s think time (user browsing)</span></div>
+                                        <div class="key-point"><span class="key-point-icon">→</span><span>Product Detail: 10s (reading description, reviews)</span></div>
+                                        <div class="key-point"><span class="key-point-icon">→</span><span>Add to Cart: 3s (quick action)</span></div>
+                                        <div class="key-point"><span class="key-point-icon">→</span><span>Checkout Form: 15s (filling payment info)</span></div>
+                                    </div>
+                                    <p><strong>Total Transaction Time:</strong> ~38 seconds per user journey</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- API CRUD JMeter -->
+                    <div class="ref-card">
+                        <div class="ref-card-header"><div class="ref-card-title">API CRUD Operations</div><span class="ref-card-badge">JMETER</span></div>
+                        <div class="ref-card-description">RESTful API testing: GET, POST, PUT, DELETE dengan assertions.</div>
+                        <div class="ref-card-formula" style="text-align:left;white-space:pre;font-size:0.75rem;overflow-x:auto">Thread Group Configuration:
+- Number of Threads: 50
+- Ramp-up Period: 60 seconds
+- Loop Count: 10
+
+HTTP Request Defaults:
+- Server: api.example.com
+- Protocol: https
+- Content-Type: application/json
+
+Test Sequence:
+1. GET /api/users (List all users)
+   - Response Assertion: Status Code = 200
+   - JSON Assertion: $.users[*].id exists
+   
+2. POST /api/users (Create user)
+   Body: {"name":"Test User","email":"test@example.com"}
+   - Response Assertion: Status Code = 201
+   - JSON Extractor: Extract user_id
+   
+3. GET /api/users/${user_id} (Get specific user)
+   - Response Assertion: Status Code = 200
+   - Duration Assertion: Response time < 500ms
+   
+4. PUT /api/users/${user_id} (Update user)
+   Body: {"name":"Updated Name"}
+   - Response Assertion: Status Code = 200
+   
+5. DELETE /api/users/${user_id} (Delete user)
+   - Response Assertion: Status Code = 204
+
+Timers:
+- Constant Timer: 1000ms between requests</div>
+                        <button class="toggle-explanation" onclick="toggleExplanation(this)">📖 Lihat Penjelasan</button>
+                        <div class="collapsible-content">
+                            <div class="ref-card-explanation">
+                                <div class="explanation-content">
+                                    <p><strong>JMeter Components Needed:</strong></p>
+                                    <div class="key-points">
+                                        <div class="key-point"><span class="key-point-icon">→</span><span>Thread Group: Configure users & ramp-up</span></div>
+                                        <div class="key-point"><span class="key-point-icon">→</span><span>HTTP Request Sampler: Untuk setiap API call</span></div>
+                                        <div class="key-point"><span class="key-point-icon">→</span><span>JSON Extractor: Extract user_id dari response</span></div>
+                                        <div class="key-point"><span class="key-point-icon">→</span><span>Response Assertion: Validasi status code</span></div>
+                                        <div class="key-point"><span class="key-point-icon">→</span><span>Constant Timer: Think time 1 detik</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workload Modeling Examples -->
+            <div class="reference-category" style="margin-top:30px">
+                <h3 class="category-title"><span class="icon">📊</span>Workload Modeling Examples</h3>
+                <div class="specs-table-container">
+                    <table class="specs-table">
+                        <thead>
+                            <tr>
+                                <th>User Journey</th>
+                                <th>% Distribution</th>
+                                <th>Avg Duration</th>
+                                <th>Think Time</th>
+                                <th>Target TPS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="spec-row small-scale">
+                                <td><strong>Browse Only</strong></td>
+                                <td>40%</td>
+                                <td>30 seconds</td>
+                                <td>5-10s</td>
+                                <td>4.0 TPS</td>
+                            </tr>
+                            <tr class="spec-row small-scale">
+                                <td><strong>Browse + Search</strong></td>
+                                <td>25%</td>
+                                <td>45 seconds</td>
+                                <td>3-8s</td>
+                                <td>2.5 TPS</td>
+                            </tr>
+                            <tr class="spec-row medium-scale">
+                                <td><strong>Add to Cart</strong></td>
+                                <td>20%</td>
+                                <td>60 seconds</td>
+                                <td>5-15s</td>
+                                <td>2.0 TPS</td>
+                            </tr>
+                            <tr class="spec-row large-scale">
+                                <td><strong>Complete Checkout</strong></td>
+                                <td>15%</td>
+                                <td>120 seconds</td>
+                                <td>10-30s</td>
+                                <td>1.5 TPS</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:10px">
+                    📚 <strong>Referensi:</strong> 
+                    <a href="https://www.vinsguru.com/jmeter-performance-testing-application-of-littles-law-to-workload-models/" target="_blank" style="color:var(--accent)">Vinsguru Workload Models</a> | 
+                    <a href="https://grafana.com/docs/k6/latest/testing-guides/load-testing-websites/" target="_blank" style="color:var(--accent)">k6 Load Testing Websites</a>
+                </div>
+                
+                <div class="explanation-highlight" style="margin-top:20px">
+                    <strong>Cara Implementasi Multi-Scenario:</strong>
+                    <p>Dengan target total 10 TPS, Anda butuh:</p>
+                    <div class="key-points">
+                        <div class="key-point"><span class="key-point-icon">→</span><span>Browse Only: 40 VUs (40% × 100 VUs)</span></div>
+                        <div class="key-point"><span class="key-point-icon">→</span><span>Browse + Search: 25 VUs (25% × 100 VUs)</span></div>
+                        <div class="key-point"><span class="key-point-icon">→</span><span>Add to Cart: 20 VUs (20% × 100 VUs)</span></div>
+                        <div class="key-point"><span class="key-point-icon">→</span><span>Complete Checkout: 15 VUs (15% × 100 VUs)</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real Production Data Examples -->
+            <div class="reference-category" style="margin-top:30px">
+                <h3 class="category-title"><span class="icon">📈</span>Real Production Data Examples</h3>
+                <div class="method-grid">
+                    <div class="method-card">
+                        <div class="method-title">E-Commerce Platform</div>
+                        <div class="method-description">
+                            <strong>Peak Hours:</strong> 12:00-14:00, 19:00-21:00<br>
+                            <strong>Daily Transactions:</strong> 500,000<br>
+                            <strong>Peak TPS:</strong> ~21 TPS<br>
+                            <strong>Avg Session:</strong> 180 seconds<br>
+                            <strong>Target VUs:</strong> 3,780 users
+                        </div>
+                    </div>
+                    <div class="method-card">
+                        <div class="method-title">Banking API</div>
+                        <div class="method-description">
+                            <strong>Peak Hours:</strong> 08:00-10:00<br>
+                            <strong>Daily Transactions:</strong> 2,000,000<br>
+                            <strong>Peak TPS:</strong> ~83 TPS<br>
+                            <strong>Avg Session:</strong> 30 seconds<br>
+                            <strong>Target VUs:</strong> 2,490 users
+                        </div>
+                    </div>
+                    <div class="method-card">
+                        <div class="method-title">Media Streaming</div>
+                        <div class="method-description">
+                            <strong>Peak Hours:</strong> 20:00-23:00<br>
+                            <strong>Concurrent Streams:</strong> 50,000<br>
+                            <strong>Requests/Stream:</strong> 10 req/min<br>
+                            <strong>Peak RPS:</strong> ~8,333 RPS<br>
+                            <strong>Target VUs:</strong> 50,000 users
+                        </div>
+                    </div>
+                    <div class="method-card">
+                        <div class="method-title">Social Media Feed</div>
+                        <div class="method-description">
+                            <strong>Peak Hours:</strong> 12:00-13:00, 21:00-22:00<br>
+                            <strong>Daily Active Users:</strong> 5,000,000<br>
+                            <strong>Peak TPS:</strong> ~208 TPS<br>
+                            <strong>Avg Session:</strong> 300 seconds<br>
+                            <strong>Target VUs:</strong> 62,400 users
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1170,35 +1472,50 @@
             document.getElementById('endToEndBtn').classList.toggle('active', mode === 'endToEnd');
             document.getElementById('singleApiBtn').classList.toggle('active', mode === 'singleApi');
             document.getElementById('matrixBtn').classList.toggle('active', mode === 'matrix');
+            document.getElementById('scenariosBtn').classList.toggle('active', mode === 'scenarios');
+            document.getElementById('troubleshootBtn').classList.toggle('active', mode === 'troubleshoot');
+            document.getElementById('glossaryBtn').classList.toggle('active', mode === 'glossary');
+            document.getElementById('checklistBtn').classList.toggle('active', mode === 'checklist');
             document.getElementById('infraBtn').classList.toggle('active', mode === 'infrastructure');
             document.getElementById('referencesBtn').classList.toggle('active', mode === 'references');
             
             const mainContent = document.querySelector('.main-content');
             const matrixContent = document.getElementById('matrixContent');
+            const scenariosContent = document.getElementById('scenariosContent');
+            const troubleshootContent = document.getElementById('troubleshootContent');
+            const glossaryContent = document.getElementById('glossaryContent');
+            const checklistContent = document.getElementById('checklistContent');
             const infraContent = document.getElementById('infrastructureContent');
             const referencesContent = document.getElementById('referencesContent');
             
+            // Hide all sections first
+            mainContent.style.display = 'none';
+            matrixContent.style.display = 'none';
+            scenariosContent.style.display = 'none';
+            troubleshootContent.style.display = 'none';
+            glossaryContent.style.display = 'none';
+            checklistContent.style.display = 'none';
+            infraContent.style.display = 'none';
+            referencesContent.style.display = 'none';
+            
+            // Show selected section
             if (mode === 'matrix') {
-                mainContent.style.display = 'none';
                 matrixContent.style.display = 'block';
-                infraContent.style.display = 'none';
-                referencesContent.style.display = 'none';
+            } else if (mode === 'scenarios') {
+                scenariosContent.style.display = 'block';
+            } else if (mode === 'troubleshoot') {
+                troubleshootContent.style.display = 'block';
+            } else if (mode === 'glossary') {
+                glossaryContent.style.display = 'block';
+            } else if (mode === 'checklist') {
+                checklistContent.style.display = 'block';
             } else if (mode === 'infrastructure') {
-                mainContent.style.display = 'none';
-                matrixContent.style.display = 'none';
                 infraContent.style.display = 'block';
-                referencesContent.style.display = 'none';
                 updateInfrastructureRecommendations();
             } else if (mode === 'references') {
-                mainContent.style.display = 'none';
-                matrixContent.style.display = 'none';
-                infraContent.style.display = 'none';
                 referencesContent.style.display = 'block';
             } else {
                 mainContent.style.display = 'grid';
-                matrixContent.style.display = 'none';
-                infraContent.style.display = 'none';
-                referencesContent.style.display = 'none';
                 document.getElementById('sessionDurationGroup').style.display = mode === 'endToEnd' ? 'block' : 'none';
                 document.getElementById('apiCallsGroup').style.display = mode === 'endToEnd' ? 'block' : 'none';
                 document.getElementById('apiResponseTimeGroup').style.display = mode === 'singleApi' ? 'block' : 'none';
@@ -1341,3 +1658,735 @@
     </script>
 </body>
 </html>
+        <!-- Troubleshooting Guide Section -->
+        <div class="infrastructure-content" id="troubleshootContent" style="display:none;padding:40px">
+            <h2 class="section-title">🔧 Performance Testing Troubleshooting Guide</h2>
+            <p style="color:var(--text-secondary);margin-bottom:24px">Panduan identifikasi dan solusi untuk masalah umum dalam performance testing.</p>
+            
+            <!-- Common Issues -->
+            <div class="reference-category">
+                <h3 class="category-title"><span class="icon">⚠️</span>Common Performance Bottlenecks</h3>
+                <div class="reference-cards">
+                    <div class="ref-card">
+                        <div class="ref-card-header"><div class="ref-card-title">High Response Time</div><span class="ref-card-badge">ISSUE</span></div>
+                        <div class="ref-card-description">Response time meningkat drastis saat load tinggi.</div>
+                        <button class="toggle-explanation" onclick="toggleExplanation(this)">🔍 Diagnosis & Solution</button>
+                        <div class="collapsible-content">
+                            <div class="ref-card-explanation">
+                                <div class="explanation-content">
+                                    <p><strong>Kemungkinan Penyebab:</strong></p>
+                                    <div class="explanation-highlight">
+                                        <strong>1. Database Bottleneck</strong>
+                                        <p><strong>Gejala:</strong> Slow queries, connection pool exhausted, high DB CPU</p>
+                                        <p><strong>Solusi:</strong></p>
+                                        <div class="key-points">
+                                            <div class="key-point"><span class="key-point-icon">→</span><span>Tambah index pada kolom yang sering di-query</span></div>
+                                            <div class="key-point"><span class="key-point-icon">→</span><span>Optimize slow queries (use EXPLAIN)</span></div>
+                                            <div class="key-point"><span class="key-point-icon">→</span><span>Increase connection pool size</span></div>
+                                            <div class="key-point"><span class="key-point-icon">→</span><span>Implement caching (Redis, Memcached)</span></div>
+                                            <div class="key-point"><span class="key-point-icon">→</span><span>Consider database replication (read replicas)</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="explanation-highlight">
+                                        <strong>2. Application Server Bottleneck</strong>
+                                        <p><strong>Gejala:</strong> High CPU usage, thread pool exhausted, memory pressure</p>
+                                        <p><strong>Solusi:</strong></p>
+                                        <div class="key-points">
+                                            <div class="key-point"><span class="key-point-icon">→</span><span>Profile aplikasi untuk menemukan hotspot</span></div>
+                                            <div class="key-point"><span class="key-point-icon">→</span><span>Optimize algoritma dan data structures</span></div>
+                                            <div class="key-point"><span class="key-point-icon">→</span><span>Increase thread pool size</span></div>
+                                            <div class="key-point"><span class="key-point-icon">→</span><span>Horizontal scaling (add more app servers)</span></div>
+                                            <div class="key-point"><span class="key-point-icon">→</span><span>Implement async processing untuk long tasks</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="explanation-highlight">
+                                        <strong>3. Network Bottleneck</strong>
+                                        <p><strong>Gejala:</strong> High latency, packet loss, bandwidth saturation</p>
+                                        <p><strong>Solusi:</strong></p>
+                                        <div class="key-points">
+                                            <div class="key-point"><span class="key-point-icon">→</span><span>Use CDN untuk static assets</span></div>
+                                            <div class="key-point"><span class="key-point-icon">→</span><span>Compress responses (gzip, brotli)</span></div>
+                                            <div class="key-point"><span class="key-point-icon">→</span><span>Minimize payload size</span></div>
+                                            <div class="key-point"><span class="key-point-icon">→</span><span>Upgrade network bandwidth</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ref-card">
+                        <div class="ref-card-header"><div class="ref-card-title">High Error Rate</div><span class="ref-card-badge">ISSUE</span></div>
+                        <div class="ref-card-description">Error rate meningkat saat load testing (5xx errors, timeouts).</div>
+                        <button class="toggle-explanation" onclick="toggleExplanation(this)">🔍 Diagnosis & Solution</button>
+                        <div class="collapsible-content">
+                            <div class="ref-card-explanation">
+                                <div class="explanation-content">
+                                    <p><strong>Troubleshooting Steps:</strong></p>
+                                    <div class="explanation-highlight">
+                                        <strong>500 Internal Server Error</strong>
+                                        <div class="key-points">
+                                            <div class="key-point"><span class="key-point-icon">1.</span><span>Check application logs untuk exception details</span></div>
+                                            <div class="key-point"><span class="key-point-icon">2.</span><span>Verify database connections tidak habis</span></div>
+                                            <div class="key-point"><span class="key-point-icon">3.</span><span>Check memory usage (possible OutOfMemory)</span></div>
+                                            <div class="key-point"><span class="key-point-icon">4.</span><span>Review recent code changes</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="explanation-highlight">
+                                        <strong>502/504 Gateway Timeout</strong>
+                                        <div class="key-points">
+                                            <div class="key-point"><span class="key-point-icon">1.</span><span>Increase timeout settings di load balancer</span></div>
+                                            <div class="key-point"><span class="key-point-icon">2.</span><span>Check upstream server health</span></div>
+                                            <div class="key-point"><span class="key-point-icon">3.</span><span>Verify firewall rules</span></div>
+                                            <div class="key-point"><span class="key-point-icon">4.</span><span>Scale up backend servers</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="explanation-highlight">
+                                        <strong>Connection Refused</strong>
+                                        <div class="key-points">
+                                            <div class="key-point"><span class="key-point-icon">1.</span><span>Service might be down - check health endpoint</span></div>
+                                            <div class="key-point"><span class="key-point-icon">2.</span><span>Port may be blocked - verify firewall</span></div>
+                                            <div class="key-point"><span class="key-point-icon">3.</span><span>Max connections reached - increase limit</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ref-card">
+                        <div class="ref-card-header"><div class="ref-card-title">Memory Leak</div><span class="ref-card-badge">ISSUE</span></div>
+                        <div class="ref-card-description">Memory usage terus meningkat dan tidak turun (heap exhaustion).</div>
+                        <button class="toggle-explanation" onclick="toggleExplanation(this)">🔍 Diagnosis & Solution</button>
+                        <div class="collapsible-content">
+                            <div class="ref-card-explanation">
+                                <div class="explanation-content">
+                                    <p><strong>Cara Detect Memory Leak:</strong></p>
+                                    <div class="key-points">
+                                        <div class="key-point"><span class="key-point-icon">→</span><span>Memory usage naik terus selama endurance test</span></div>
+                                        <div class="key-point"><span class="key-point-icon">→</span><span>GC tidak berhasil free memory</span></div>
+                                        <div class="key-point"><span class="key-point-icon">→</span><span>OutOfMemory errors setelah beberapa jam</span></div>
+                                        <div class="key-point"><span class="key-point-icon">→</span><span>Response time degradasi over time</span></div>
+                                    </div>
+                                    <div class="explanation-highlight">
+                                        <strong>Investigasi Steps:</strong>
+                                        <p><strong>Java/JVM:</strong></p>
+                                        <div class="key-points">
+                                            <div class="key-point"><span class="key-point-icon">1.</span><span>Generate heap dump: jmap -dump:live,format=b,file=heap.bin [PID]</span></div>
+                                            <div class="key-point"><span class="key-point-icon">2.</span><span>Analyze dengan Eclipse MAT atau VisualVM</span></div>
+                                            <div class="key-point"><span class="key-point-icon">3.</span><span>Cari objects yang terus bertambah</span></div>
+                                            <div class="key-point"><span class="key-point-icon">4.</span><span>Trace allocation path</span></div>
+                                        </div>
+                                        <p><strong>Node.js:</strong></p>
+                                        <div class="key-points">
+                                            <div class="key-point"><span class="key-point-icon">1.</span><span>Use --inspect flag untuk debugging</span></div>
+                                            <div class="key-point"><span class="key-point-icon">2.</span><span>Chrome DevTools Memory Profiler</span></div>
+                                            <div class="key-point"><span class="key-point-icon">3.</span><span>Clinic.js untuk heap snapshots</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="explanation-highlight">
+                                        <strong>Common Causes:</strong>
+                                        <div class="key-points">
+                                            <div class="key-point"><span class="key-point-icon">→</span><span>Unclosed database connections</span></div>
+                                            <div class="key-point"><span class="key-point-icon">→</span><span>Event listeners tidak di-cleanup</span></div>
+                                            <div class="key-point"><span class="key-point-icon">→</span><span>Caching tanpa eviction policy</span></div>
+                                            <div class="key-point"><span class="key-point-icon">→</span><span>Static collections yang terus bertambah</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ref-card">
+                        <div class="ref-card-header"><div class="ref-card-title">Throughput Plateau</div><span class="ref-card-badge">ISSUE</span></div>
+                        <div class="ref-card-description">Throughput tidak naik meskipun VUs ditambah (capacity limit reached).</div>
+                        <button class="toggle-explanation" onclick="toggleExplanation(this)">🔍 Diagnosis & Solution</button>
+                        <div class="collapsible-content">
+                            <div class="ref-card-explanation">
+                                <div class="explanation-content">
+                                    <p><strong>Identifikasi Bottleneck:</strong></p>
+                                    <div class="explanation-highlight">
+                                        <strong>Resource Saturation Check:</strong>
+                                        <div class="key-points">
+                                            <div class="key-point"><span class="key-point-icon">→</span><span><strong>CPU:</strong> Jika CPU > 80%, tambah cores atau optimize code</span></div>
+                                            <div class="key-point"><span class="key-point-icon">→</span><span><strong>Memory:</strong> Jika RAM > 90%, tambah memory atau fix memory leak</span></div>
+                                            <div class="key-point"><span class="key-point-icon">→</span><span><strong>Disk I/O:</strong> Jika iowait high, gunakan SSD atau optimize queries</span></div>
+                                            <div class="key-point"><span class="key-point-icon">→</span><span><strong>Network:</strong> Jika bandwidth saturated, upgrade network</span></div>
+                                            <div class="key-point"><span class="key-point-icon">→</span><span><strong>Database:</strong> Jika DB connections maxed, increase pool size</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="explanation-highlight">
+                                        <strong>Scaling Strategy:</strong>
+                                        <p><strong>Vertical Scaling (Scale Up):</strong> Tambah CPU/RAM/Disk pada existing server</p>
+                                        <p><strong>Horizontal Scaling (Scale Out):</strong> Tambah jumlah servers dengan load balancer</p>
+                                        <p><strong>Rekomendasi:</strong> Horizontal scaling lebih resilient dan cost-effective untuk high traffic</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Decision Tree -->
+            <div class="reference-category" style="margin-top:30px">
+                <h3 class="category-title"><span class="icon">🌳</span>Root Cause Analysis Decision Tree</h3>
+                <div class="specs-table-container">
+                    <table class="specs-table">
+                        <thead>
+                            <tr>
+                                <th>Symptom</th>
+                                <th>Check This First</th>
+                                <th>Then Check</th>
+                                <th>Likely Root Cause</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="spec-row small-scale">
+                                <td><strong>Response time > 5s</strong></td>
+                                <td>Database query time</td>
+                                <td>Network latency, App processing time</td>
+                                <td>Slow DB queries, Missing indexes</td>
+                            </tr>
+                            <tr class="spec-row small-scale">
+                                <td><strong>CPU usage > 90%</strong></td>
+                                <td>Application profiling</td>
+                                <td>Thread count, GC activity</td>
+                                <td>Inefficient algorithms, Too many threads</td>
+                            </tr>
+                            <tr class="spec-row medium-scale">
+                                <td><strong>Memory keeps growing</strong></td>
+                                <td>Heap dump analysis</td>
+                                <td>GC logs, Object retention</td>
+                                <td>Memory leak, No cache eviction</td>
+                            </tr>
+                            <tr class="spec-row medium-scale">
+                                <td><strong>Error rate > 5%</strong></td>
+                                <td>Application logs</td>
+                                <td>Server health, Dependencies status</td>
+                                <td>Service overload, Dependency failure</td>
+                            </tr>
+                            <tr class="spec-row large-scale">
+                                <td><strong>Throughput plateau</strong></td>
+                                <td>Resource utilization</td>
+                                <td>Connection pools, Concurrency limits</td>
+                                <td>Resource saturation, Configuration limits</td>
+                            </tr>
+                            <tr class="spec-row enterprise-scale">
+                                <td><strong>Intermittent failures</strong></td>
+                                <td>Monitoring dashboards</td>
+                                <td>Dependency health, Network stability</td>
+                                <td>Flaky dependencies, Network issues</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:10px">
+                    📚 <strong>Referensi:</strong> 
+                    <a href="https://sre.google/sre-book/monitoring-distributed-systems/" target="_blank" style="color:var(--accent)">Google SRE - Monitoring</a> | 
+                    <a href="https://www.brendangregg.com/usemethod.html" target="_blank" style="color:var(--accent)">USE Method by Brendan Gregg</a>
+                </div>
+            </div>
+
+            <!-- Quick Fixes -->
+            <div class="reference-category" style="margin-top:30px">
+                <h3 class="category-title"><span class="icon">⚡</span>Quick Wins & Optimizations</h3>
+                <div class="method-grid">
+                    <div class="method-card">
+                        <div class="method-title">Database Optimization</div>
+                        <div class="key-points">
+                            <div class="key-point"><span class="key-point-icon">✓</span><span>Add indexes untuk WHERE, JOIN, ORDER BY columns</span></div>
+                            <div class="key-point"><span class="key-point-icon">✓</span><span>Use connection pooling (min: 10, max: 50)</span></div>
+                            <div class="key-point"><span class="key-point-icon">✓</span><span>Enable query caching</span></div>
+                            <div class="key-point"><span class="key-point-icon">✓</span><span>Batch insert/update operations</span></div>
+                        </div>
+                    </div>
+                    <div class="method-card">
+                        <div class="method-title">Application Optimization</div>
+                        <div class="key-points">
+                            <div class="key-point"><span class="key-point-icon">✓</span><span>Implement caching (Redis) untuk frequent queries</span></div>
+                            <div class="key-point"><span class="key-point-icon">✓</span><span>Use async processing untuk heavy tasks</span></div>
+                            <div class="key-point"><span class="key-point-icon">✓</span><span>Compress responses (gzip)</span></div>
+                            <div class="key-point"><span class="key-point-icon">✓</span><span>Lazy load resources</span></div>
+                        </div>
+                    </div>
+                    <div class="method-card">
+                        <div class="method-title">Infrastructure Optimization</div>
+                        <div class="key-points">
+                            <div class="key-point"><span class="key-point-icon">✓</span><span>Use CDN untuk static assets</span></div>
+                            <div class="key-point"><span class="key-point-icon">✓</span><span>Enable HTTP/2 atau HTTP/3</span></div>
+                            <div class="key-point"><span class="key-point-icon">✓</span><span>Implement load balancing</span></div>
+                            <div class="key-point"><span class="key-point-icon">✓</span><span>Auto-scaling policies</span></div>
+                        </div>
+                    </div>
+                    <div class="method-card">
+                        <div class="method-title">Monitoring Setup</div>
+                        <div class="key-points">
+                            <div class="key-point"><span class="key-point-icon">✓</span><span>Setup APM (New Relic, Datadog, Dynatrace)</span></div>
+                            <div class="key-point"><span class="key-point-icon">✓</span><span>Enable slow query logging</span></div>
+                            <div class="key-point"><span class="key-point-icon">✓</span><span>Alert untuk CPU > 80%, Memory > 90%</span></div>
+                            <div class="key-point"><span class="key-point-icon">✓</span><span>Track error rate dan response time</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Glossary & Quick Reference Section -->
+        <div class="infrastructure-content" id="glossaryContent" style="display:none;padding:40px">
+            <h2 class="section-title">📚 Glossary & Quick Reference</h2>
+            <p style="color:var(--text-secondary);margin-bottom:24px">Kamus istilah performance testing, formulas penting, dan quick converters.</p>
+            
+            <!-- A-Z Glossary -->
+            <div class="reference-category">
+                <h3 class="category-title"><span class="icon">📖</span>Performance Testing Terminology (A-Z)</h3>
+                <div class="specs-table-container">
+                    <table class="specs-table">
+                        <thead>
+                            <tr>
+                                <th style="width:20%">Term</th>
+                                <th style="width:50%">Definition</th>
+                                <th style="width:30%">Example / Formula</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="spec-row"><td><strong>Apdex</strong></td><td>Application Performance Index - metrik kepuasan user berdasarkan response time</td><td>Apdex = (Satisfied + Tolerating/2) / Total</td></tr>
+                            <tr class="spec-row"><td><strong>Baseline Test</strong></td><td>Test dengan load minimal untuk mendapatkan performance baseline</td><td>1-5 VUs, 10-15 menit</td></tr>
+                            <tr class="spec-row"><td><strong>Bottleneck</strong></td><td>Komponen sistem yang membatasi overall performance</td><td>CPU at 100%, DB connection pool exhausted</td></tr>
+                            <tr class="spec-row"><td><strong>Concurrency</strong></td><td>Jumlah users/requests yang aktif pada waktu bersamaan</td><td>1000 concurrent users = 1000 VUs</td></tr>
+                            <tr class="spec-row"><td><strong>Distributed Testing</strong></td><td>Load testing menggunakan multiple load generators</td><td>3 VMs @ 10K VUs each = 30K total VUs</td></tr>
+                            <tr class="spec-row"><td><strong>Endurance Test</strong></td><td>Test dengan load sustained untuk waktu lama (hours/days)</td><td>70% load for 24 hours</td></tr>
+                            <tr class="spec-row"><td><strong>Error Rate</strong></td><td>Persentase requests yang gagal</td><td>Error Rate = (Failed / Total) × 100%</td></tr>
+                            <tr class="spec-row"><td><strong>Graceful Degradation</strong></td><td>Sistem tetap berfungsi dengan reduced performance saat overload</td><td>Queue requests instead of failing</td></tr>
+                            <tr class="spec-row"><td><strong>HTTP/2</strong></td><td>Protocol HTTP versi 2 dengan multiplexing & compression</td><td>Multiple requests over single connection</td></tr>
+                            <tr class="spec-row"><td><strong>Iteration</strong></td><td>Satu kali complete execution dari test script</td><td>1 user × 10 iterations = 10 total iterations</td></tr>
+                            <tr class="spec-row"><td><strong>Jitter</strong></td><td>Variasi delay dalam network latency</td><td>Latency: 50ms ± 10ms jitter</td></tr>
+                            <tr class="spec-row"><td><strong>Latency</strong></td><td>Waktu dari request dikirim sampai byte pertama response diterima (TTFB)</td><td>TTFB = 100ms</td></tr>
+                            <tr class="spec-row"><td><strong>Little's Law</strong></td><td>Formula untuk menghitung concurrent users</td><td>N = λ × W (VUs = TPS × Duration)</td></tr>
+                            <tr class="spec-row"><td><strong>Load Test</strong></td><td>Test dengan expected peak load</td><td>100% of expected peak for 30-60 min</td></tr>
+                            <tr class="spec-row"><td><strong>Mean Time Between Failures (MTBF)</strong></td><td>Rata-rata waktu antara failures</td><td>MTBF = Total Uptime / Number of Failures</td></tr>
+                            <tr class="spec-row"><td><strong>Mean Time To Recovery (MTTR)</strong></td><td>Rata-rata waktu untuk recovery dari failure</td><td>MTTR = Total Downtime / Number of Failures</td></tr>
+                            <tr class="spec-row"><td><strong>Pacing</strong></td><td>Delay tambahan untuk mengontrol request rate</td><td>Pacing = 5s between iterations</td></tr>
+                            <tr class="spec-row"><td><strong>Percentile (p95, p99)</strong></td><td>95% atau 99% requests selesai dalam waktu tertentu</td><td>p95 = 500ms means 95% requests < 500ms</td></tr>
+                            <tr class="spec-row"><td><strong>Ramp-up</strong></td><td>Period menaikkan load secara bertahap</td><td>0 to 100 VUs in 5 minutes</td></tr>
+                            <tr class="spec-row"><td><strong>Response Time</strong></td><td>Total waktu dari request dikirim sampai response complete diterima</td><td>RT = Latency + Processing + Transfer</td></tr>
+                            <tr class="spec-row"><td><strong>RPS (Requests Per Second)</strong></td><td>Jumlah HTTP requests per detik</td><td>1 TPS × 10 requests = 10 RPS</td></tr>
+                            <tr class="spec-row"><td><strong>Saturation Point</strong></td><td>Titik dimana sistem mencapai max capacity</td><td>TPS tidak naik meski VUs ditambah</td></tr>
+                            <tr class="spec-row"><td><strong>SLA (Service Level Agreement)</strong></td><td>Kontrak formal mengenai level service yang dijanjikan</td><td>99.9% uptime, p95 < 500ms</td></tr>
+                            <tr class="spec-row"><td><strong>SLI (Service Level Indicator)</strong></td><td>Metrik yang diukur untuk menentukan SLA</td><td>Availability, Response Time, Error Rate</td></tr>
+                            <tr class="spec-row"><td><strong>SLO (Service Level Objective)</strong></td><td>Target internal untuk SLI</td><td>p95 response time < 300ms</td></tr>
+                            <tr class="spec-row"><td><strong>Spike Test</strong></td><td>Test dengan sudden increase load</td><td>50 to 500 VUs in 30 seconds</td></tr>
+                            <tr class="spec-row"><td><strong>Stress Test</strong></td><td>Test beyond normal capacity untuk menemukan breaking point</td><td>150% of expected peak</td></tr>
+                            <tr class="spec-row"><td><strong>Think Time</strong></td><td>Delay antara user actions untuk simulate realistic behavior</td><td>5-10s between page views</td></tr>
+                            <tr class="spec-row"><td><strong>Throughput</strong></td><td>Volume data yang diproses per unit time</td><td>1000 KB/s, 100 TPS</td></tr>
+                            <tr class="spec-row"><td><strong>TPS (Transactions Per Second)</strong></td><td>Jumlah business transactions per detik</td><td>10 TPS = 10 checkouts/second</td></tr>
+                            <tr class="spec-row"><td><strong>TTFB (Time To First Byte)</strong></td><td>Sama dengan Latency - waktu sampai byte pertama diterima</td><td>TTFB = 50ms</td></tr>
+                            <tr class="spec-row"><td><strong>Virtual User (VU)</strong></td><td>Simulated user dalam load testing tool</td><td>100 VUs = 100 concurrent simulated users</td></tr>
+                            <tr class="spec-row"><td><strong>Workload Model</strong></td><td>Representasi realistic dari production usage patterns</td><td>40% browse, 25% search, 20% cart, 15% checkout</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Essential Formulas -->
+            <div class="reference-category" style="margin-top:30px">
+                <h3 class="category-title"><span class="icon">🧮</span>Essential Formulas</h3>
+                <div class="method-grid">
+                    <div class="method-card">
+                        <div class="method-title">Little's Law</div>
+                        <div class="method-formula">N = λ × W</div>
+                        <div class="method-description">
+                            <strong>VUs = TPS × (Response Time + Think Time)</strong><br>
+                            Contoh: 10 TPS × 12s = 120 VUs
+                        </div>
+                    </div>
+                    <div class="method-card">
+                        <div class="method-title">Peak TPS</div>
+                        <div class="method-formula">Peak TPS = (Daily Trans × 15%) ÷ 3600</div>
+                        <div class="method-description">
+                            Contoh: (200,000 × 15%) ÷ 3600 = 8.3 TPS
+                        </div>
+                    </div>
+                    <div class="method-card">
+                        <div class="method-title">RPS Calculation</div>
+                        <div class="method-formula">RPS = (VUs × Requests) ÷ Duration</div>
+                        <div class="method-description">
+                            Contoh: (100 VUs × 10 req) ÷ 60s = 16.7 RPS
+                        </div>
+                    </div>
+                    <div class="method-card">
+                        <div class="method-title">Error Rate</div>
+                        <div class="method-formula">Error Rate = (Failed ÷ Total) × 100%</div>
+                        <div class="method-description">
+                            Contoh: (50 failed ÷ 10,000 total) × 100% = 0.5%
+                        </div>
+                    </div>
+                    <div class="method-card">
+                        <div class="method-title">Throughput</div>
+                        <div class="method-formula">Throughput = Data Size × TPS</div>
+                        <div class="method-description">
+                            Contoh: 50KB × 100 TPS = 5,000 KB/s = 5 MB/s
+                        </div>
+                    </div>
+                    <div class="method-card">
+                        <div class="method-title">Availability</div>
+                        <div class="method-formula">Availability = (Uptime ÷ Total) × 100%</div>
+                        <div class="method-description">
+                            99.9% = 43.8 min downtime/month<br>
+                            99.99% = 4.38 min downtime/month
+                        </div>
+                    </div>
+                    <div class="method-card">
+                        <div class="method-title">Apdex Score</div>
+                        <div class="method-formula">Apdex = (Satisfied + Tolerating/2) ÷ Total</div>
+                        <div class="method-description">
+                            Satisfied: RT ≤ T<br>
+                            Tolerating: T < RT ≤ 4T<br>
+                            Frustrated: RT > 4T
+                        </div>
+                    </div>
+                    <div class="method-card">
+                        <div class="method-title">Success Rate</div>
+                        <div class="method-formula">Success = (Total - Failed) ÷ Total × 100%</div>
+                        <div class="method-description">
+                            Contoh: (10,000 - 50) ÷ 10,000 × 100% = 99.5%
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Converters -->
+            <div class="reference-category" style="margin-top:30px">
+                <h3 class="category-title"><span class="icon">🔄</span>Quick Converters</h3>
+                <div class="specs-table-container">
+                    <table class="specs-table">
+                        <thead>
+                            <tr>
+                                <th>From</th>
+                                <th>To</th>
+                                <th>Formula</th>
+                                <th>Example</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="spec-row small-scale">
+                                <td>Daily Transactions</td>
+                                <td>Peak TPS</td>
+                                <td>(Daily × 15%) ÷ 3600</td>
+                                <td>200,000 → 8.3 TPS</td>
+                            </tr>
+                            <tr class="spec-row small-scale">
+                                <td>Monthly Transactions</td>
+                                <td>Daily Transactions</td>
+                                <td>Monthly ÷ 30</td>
+                                <td>6,000,000 → 200,000</td>
+                            </tr>
+                            <tr class="spec-row small-scale">
+                                <td>TPS</td>
+                                <td>VUs</td>
+                                <td>TPS × Session Duration</td>
+                                <td>10 TPS × 120s → 1,200 VUs</td>
+                            </tr>
+                            <tr class="spec-row small-scale">
+                                <td>VUs</td>
+                                <td>TPS</td>
+                                <td>VUs ÷ Session Duration</td>
+                                <td>1,200 VUs ÷ 120s → 10 TPS</td>
+                            </tr>
+                            <tr class="spec-row medium-scale">
+                                <td>TPS</td>
+                                <td>RPS</td>
+                                <td>TPS × Requests per Transaction</td>
+                                <td>10 TPS × 5 req → 50 RPS</td>
+                            </tr>
+                            <tr class="spec-row medium-scale">
+                                <td>KB/s</td>
+                                <td>MB/s</td>
+                                <td>KB ÷ 1024</td>
+                                <td>5,120 KB/s → 5 MB/s</td>
+                            </tr>
+                            <tr class="spec-row medium-scale">
+                                <td>Milliseconds</td>
+                                <td>Seconds</td>
+                                <td>ms ÷ 1000</td>
+                                <td>2,500 ms → 2.5 s</td>
+                            </tr>
+                            <tr class="spec-row medium-scale">
+                                <td>Percentage</td>
+                                <td>Decimal</td>
+                                <td>% ÷ 100</td>
+                                <td>99.5% → 0.995</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Common Thresholds Reference -->
+            <div class="reference-category" style="margin-top:30px">
+                <h3 class="category-title"><span class="icon">🎯</span>Common Thresholds Reference</h3>
+                <div class="specs-table-container">
+                    <table class="specs-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Good</th>
+                                <th>Acceptable</th>
+                                <th>Poor</th>
+                                <th>Critical</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="spec-row small-scale">
+                                <td><strong>API Response Time (p95)</strong></td>
+                                <td>&lt; 200ms</td>
+                                <td>&lt; 500ms</td>
+                                <td>&lt; 1000ms</td>
+                                <td>&gt; 1000ms</td>
+                            </tr>
+                            <tr class="spec-row small-scale">
+                                <td><strong>Web Page Load (p95)</strong></td>
+                                <td>&lt; 1s</td>
+                                <td>&lt; 3s</td>
+                                <td>&lt; 5s</td>
+                                <td>&gt; 5s</td>
+                            </tr>
+                            <tr class="spec-row medium-scale">
+                                <td><strong>Error Rate</strong></td>
+                                <td>&lt; 0.1%</td>
+                                <td>&lt; 1%</td>
+                                <td>&lt; 5%</td>
+                                <td>&gt; 5%</td>
+                            </tr>
+                            <tr class="spec-row medium-scale">
+                                <td><strong>CPU Utilization</strong></td>
+                                <td>&lt; 60%</td>
+                                <td>&lt; 80%</td>
+                                <td>&lt; 90%</td>
+                                <td>&gt; 90%</td>
+                            </tr>
+                            <tr class="spec-row large-scale">
+                                <td><strong>Memory Utilization</strong></td>
+                                <td>&lt; 70%</td>
+                                <td>&lt; 85%</td>
+                                <td>&lt; 95%</td>
+                                <td>&gt; 95%</td>
+                            </tr>
+                            <tr class="spec-row enterprise-scale">
+                                <td><strong>Apdex Score</strong></td>
+                                <td>&gt; 0.94</td>
+                                <td>&gt; 0.85</td>
+                                <td>&gt; 0.70</td>
+                                <td>&lt; 0.70</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="font-size:0.85rem;color:var(--text-secondary);margin-top:10px">
+                    📚 <strong>Referensi:</strong> 
+                    <a href="https://web.dev/vitals/" target="_blank" style="color:var(--accent)">Google Web Vitals</a> | 
+                    <a href="https://www.apdex.org/" target="_blank" style="color:var(--accent)">Apdex Alliance</a>
+                </div>
+            </div>
+        </div>
+        <!-- Performance Testing Checklist Section -->
+        <div class="infrastructure-content" id="checklistContent" style="display:none;padding:40px">
+            <h2 class="section-title">✅ Performance Testing Checklist</h2>
+            <p style="color:var(--text-secondary);margin-bottom:24px">Comprehensive checklist untuk setiap fase performance testing - dari planning sampai reporting.</p>
+            
+            <!-- Pre-Test Checklist -->
+            <div class="reference-category">
+                <h3 class="category-title"><span class="icon">📋</span>Phase 1: Pre-Test Planning & Preparation</h3>
+                <div class="opt-card" style="background:var(--bg-card);padding:20px;border-radius:12px;border:1px solid var(--border)">
+                    <h3 style="color:var(--text-primary);margin-bottom:14px;font-size:1.1rem">Requirements Gathering</h3>
+                    <ul style="list-style:none">
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Identify business-critical user journeys</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Gather production traffic data (peak hours, daily transactions)</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Define SLA/SLO targets (response time, error rate, throughput)</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Identify third-party dependencies dan APIs</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Get stakeholder approval untuk test scenarios</li>
+                    </ul>
+                </div>
+                
+                <div class="opt-card" style="background:var(--bg-card);padding:20px;border-radius:12px;border:1px solid var(--border);margin-top:15px">
+                    <h3 style="color:var(--text-primary);margin-bottom:14px;font-size:1.1rem">Test Environment Setup</h3>
+                    <ul style="list-style:none">
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Verify test environment mirrors production (hardware, software, config)</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Ensure adequate test data volume (minimum 10K records per table)</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Configure monitoring tools (APM, logging, metrics)</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Setup load generator VMs dengan specs adequate</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Verify network connectivity antara load gen dan target</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Whitelist load generator IPs di firewall</li>
+                    </ul>
+                </div>
+
+                <div class="opt-card" style="background:var(--bg-card);padding:20px;border-radius:12px;border:1px solid var(--border);margin-top:15px">
+                    <h3 style="color:var(--text-primary);margin-bottom:14px;font-size:1.1rem">Script Development</h3>
+                    <ul style="list-style:none">
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Develop test scripts untuk setiap user journey</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Implement realistic think times</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Add correlation untuk dynamic values (session IDs, tokens)</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Parameterize test data (usernames, search terms, etc)</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Add assertions untuk validate responses</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Debug scripts dengan 1 VU untuk verify functionality</li>
+                    </ul>
+                </div>
+
+                <div class="opt-card" style="background:var(--bg-card);padding:20px;border-radius:12px;border:1px solid var(--border);margin-top:15px">
+                    <h3 style="color:var(--text-primary);margin-bottom:14px;font-size:1.1rem">Baseline Test</h3>
+                    <ul style="list-style:none">
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Run baseline test dengan 1-5 VUs</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Document baseline metrics (response time, throughput)</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Verify zero errors dalam baseline test</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- During Test Checklist -->
+            <div class="reference-category" style="margin-top:30px">
+                <h3 class="category-title"><span class="icon">▶️</span>Phase 2: Test Execution & Monitoring</h3>
+                <div class="opt-card" style="background:var(--bg-card);padding:20px;border-radius:12px;border:1px solid var(--border)">
+                    <h3 style="color:var(--text-primary);margin-bottom:14px;font-size:1.1rem">Pre-Execution Checks</h3>
+                    <ul style="list-style:none">
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Notify stakeholders tentang test schedule</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Verify all systems are healthy sebelum test</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Clear logs dan reset counters</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Document test parameters (VUs, duration, ramp-up)</li>
+                    </ul>
+                </div>
+
+                <div class="opt-card" style="background:var(--bg-card);padding:20px;border-radius:12px;border:1px solid var(--border);margin-top:15px">
+                    <h3 style="color:var(--text-primary);margin-bottom:14px;font-size:1.1rem">Real-time Monitoring</h3>
+                    <ul style="list-style:none">
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Monitor response time trends</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Track error rate (should be &lt; 1%)</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Watch CPU usage pada application servers</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Monitor memory consumption</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Check database connection pool usage</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Verify network bandwidth tidak saturated</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Monitor load generator health (CPU, memory, network)</li>
+                    </ul>
+                </div>
+
+                <div class="opt-card" style="background:var(--bg-card);padding:20px;border-radius:12px;border:1px solid var(--border);margin-top:15px">
+                    <h3 style="color:var(--text-primary);margin-bottom:14px;font-size:1.1rem">Issue Response</h3>
+                    <ul style="list-style:none">
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Document any errors atau anomalies yang terjadi</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Take screenshots dari monitoring dashboards</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Capture thread dumps jika ada performance degradation</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Save application logs untuk analysis</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Post-Test Checklist -->
+            <div class="reference-category" style="margin-top:30px">
+                <h3 class="category-title"><span class="icon">📊</span>Phase 3: Post-Test Analysis & Reporting</h3>
+                <div class="opt-card" style="background:var(--bg-card);padding:20px;border-radius:12px;border:1px solid var(--border)">
+                    <h3 style="color:var(--text-primary);margin-bottom:14px;font-size:1.1rem">Data Collection</h3>
+                    <ul style="list-style:none">
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Collect test results (response time, throughput, errors)</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Export monitoring data (APM, server metrics)</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Archive application logs</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Save database slow query logs</li>
+                    </ul>
+                </div>
+
+                <div class="opt-card" style="background:var(--bg-card);padding:20px;border-radius:12px;border:1px solid var(--border);margin-top:15px">
+                    <h3 style="color:var(--text-primary);margin-bottom:14px;font-size:1.1rem">Analysis</h3>
+                    <ul style="list-style:none">
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Compare results vs SLA/SLO targets</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Identify performance bottlenecks</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Analyze error patterns</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Review resource utilization (CPU, memory, network, disk)</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Calculate percentiles (p50, p90, p95, p99)</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Identify slow transactions (> 3 seconds)</li>
+                    </ul>
+                </div>
+
+                <div class="opt-card" style="background:var(--bg-card);padding:20px;border-radius:12px;border:1px solid var(--border);margin-top:15px">
+                    <h3 style="color:var(--text-primary);margin-bottom:14px;font-size:1.1rem">Reporting</h3>
+                    <ul style="list-style:none">
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Create executive summary (Pass/Fail, key findings)</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Document test configuration (VUs, duration, scenarios)</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Include graphs (response time, throughput, errors)</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> List performance bottlenecks dengan evidence</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Provide actionable recommendations</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Prioritize issues (Critical, High, Medium, Low)</li>
+                    </ul>
+                </div>
+
+                <div class="opt-card" style="background:var(--bg-card);padding:20px;border-radius:12px;border:1px solid var(--border);margin-top:15px">
+                    <h3 style="color:var(--text-primary);margin-bottom:14px;font-size:1.1rem">Follow-up</h3>
+                    <ul style="list-style:none">
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Present findings ke stakeholders</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Create tickets untuk identified issues</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Schedule retest setelah fixes implemented</li>
+                        <li style="padding:8px 0;color:var(--text-secondary);padding-left:25px;position:relative"><input type="checkbox" style="position:absolute;left:0;top:12px"> Archive all test artifacts untuk future reference</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Report Template -->
+            <div class="reference-category" style="margin-top:30px">
+                <h3 class="category-title"><span class="icon">📄</span>Performance Test Report Template</h3>
+                <div class="ref-card">
+                    <div class="ref-card-header"><div class="ref-card-title">Standard Report Structure</div></div>
+                    <div class="ref-card-formula" style="text-align:left;white-space:pre-wrap;font-size:0.85rem">
+<strong>1. EXECUTIVE SUMMARY</strong>
+   - Test Result: PASS / FAIL
+   - Key Findings (3-5 bullet points)
+   - Recommendation: Ready for Production / Needs Optimization
+
+<strong>2. TEST OVERVIEW</strong>
+   - Test Type: Load / Stress / Endurance / Spike
+   - Test Duration: [duration]
+   - Target Load: [X] VUs / [Y] TPS
+   - Test Environment: [specs]
+   - Test Date: [date]
+
+<strong>3. TEST CONFIGURATION</strong>
+   - User Scenarios: [list scenarios & distribution]
+   - Workload Model: [describe distribution]
+   - Think Time: [values]
+   - Ramp-up/Ramp-down: [duration]
+
+<strong>4. RESULTS SUMMARY</strong>
+   - Average Response Time: [X]ms
+   - p95 Response Time: [Y]ms
+   - p99 Response Time: [Z]ms
+   - Peak TPS Achieved: [X] TPS
+   - Total Throughput: [X] MB/s
+   - Error Rate: [X]%
+   - Success Rate: [Y]%
+
+<strong>5. SLA COMPARISON</strong>
+   [Table comparing actual vs target]
+   Metric          | Target    | Actual    | Status
+   ----------------|-----------|-----------|--------
+   p95 RT          | < 500ms   | 450ms     | PASS
+   Error Rate      | < 1%      | 0.3%      | PASS
+   Throughput      | > 100 TPS | 120 TPS   | PASS
+
+<strong>6. PERFORMANCE BOTTLENECKS</strong>
+   [List issues dengan severity & evidence]
+   - Database query timeout (CRITICAL)
+     Evidence: 50 queries > 5s in slow query log
+   - High CPU on app server #2 (HIGH)
+     Evidence: CPU sustained at 95% during peak
+
+<strong>7. RECOMMENDATIONS</strong>
+   [Prioritized list dengan estimated effort]
+   1. Add index on users.email column (HIGH, 1 day)
+   2. Increase DB connection pool to 100 (MEDIUM, 2 hours)
+   3. Implement Redis caching (MEDIUM, 3 days)
+
+<strong>8. APPENDIX</strong>
+   - Detailed graphs (response time, throughput, errors)
+   - Resource utilization charts
+   - Top 10 slowest transactions
+   - Error log samples
+                    </div>
+                </div>
+            </div>
+        </div>
