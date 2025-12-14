@@ -233,25 +233,60 @@
                         <div class="method-title">Kalkulasi Peak TPS</div>
                         <div class="method-formula" id="peakTPSFormula">Peak TPS = (Daily × 15%) ÷ 3600</div>
                         <div class="method-description">Standar industri: 15% transaksi harian terjadi di jam sibuk.</div>
+                        <button class="toggle-explanation" onclick="toggleMethodExplanation(this)" style="margin-top:8px;background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-secondary);padding:6px 12px;border-radius:6px;font-size:0.8rem;cursor:pointer;transition:all 0.3s;font-family:inherit">📖 Kenapa 15%?</button>
+                        <div class="collapsible-content">
+                            <div style="background:var(--bg-dark);border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:10px;font-size:0.85rem;color:var(--text-secondary);line-height:1.6">
+                                <p><strong>Kenapa 15%?</strong> Berdasarkan observasi industri transportation dan telco, 10-20% traffic harian terkonsentrasi di peak hour (jam sibuk). 15% adalah nilai rata-rata yang paling umum digunakan.</p>
+                                <p style="margin-top:8px"><strong>Kenapa ÷ 3600?</strong> 1 jam = 3600 detik. Untuk mendapat TPS (Transactions Per <em>Second</em>), kita harus konversi dari per hour ke per second.</p>
+                                <p style="margin-top:8px;color:var(--accent);font-size:0.8rem"><strong>📚 Referensi:</strong> FHWA Traffic Data Guide (K-factor 8-12%), Precision Traffic Systems (peak hour 6-10% ADT)</p>
+                            </div>
+                        </div>
                     </div>
                     <div class="method-card">
                         <div class="method-title">Kalkulasi VU (Little's Law)</div>
                         <div class="method-formula" id="vuFormula">VUs = Peak TPS × Session Duration</div>
                         <div class="method-description">Little's Law: N = λ × W. Formula inti untuk kapasitas concurrent user.</div>
+                        <button class="toggle-explanation" onclick="toggleMethodExplanation(this)" style="margin-top:8px;background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-secondary);padding:6px 12px;border-radius:6px;font-size:0.8rem;cursor:pointer;transition:all 0.3s;font-family:inherit">📖 Apa itu Little's Law?</button>
+                        <div class="collapsible-content">
+                            <div style="background:var(--bg-dark);border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:10px;font-size:0.85rem;color:var(--text-secondary);line-height:1.6">
+                                <p><strong>Little's Law:</strong> N = λ × W dimana N = jumlah item dalam sistem, λ (lambda) = arrival rate, W = waktu dalam sistem.</p>
+                                <p style="margin-top:8px">Dalam performance testing: <strong>VUs = TPS × (Response Time + Think Time)</strong></p>
+                                <p style="margin-top:8px">Jika simplified (tanpa think time untuk API testing): <strong>VUs = TPS × Session Duration</strong></p>
+                                <p style="margin-top:8px;color:var(--accent);font-size:0.8rem"><strong>📚 Referensi:</strong> Microsoft Azure Load Testing Docs, PerfMatrix Little's Law Guide</p>
+                            </div>
+                        </div>
                     </div>
                     <div class="method-card">
                         <div class="method-title">Distribusi RPS</div>
                         <div class="method-formula" id="rpsFormula">RPS = (VU × API Calls) ÷ Session Duration</div>
                         <div class="method-description">Mendistribusikan aksi user sepanjang durasi session.</div>
+                        <button class="toggle-explanation" onclick="toggleMethodExplanation(this)" style="margin-top:8px;background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-secondary);padding:6px 12px;border-radius:6px;font-size:0.8rem;cursor:pointer;transition:all 0.3s;font-family:inherit">📖 TPS vs RPS?</button>
+                        <div class="collapsible-content">
+                            <div style="background:var(--bg-dark);border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:10px;font-size:0.85rem;color:var(--text-secondary);line-height:1.6">
+                                <p><strong>TPS (Transactions Per Second):</strong> Business transactions - contoh: 1 checkout, 1 login.</p>
+                                <p style="margin-top:8px"><strong>RPS (Requests Per Second):</strong> HTTP requests - 1 checkout bisa = 10 HTTP requests.</p>
+                                <p style="margin-top:8px">Jika 1 transaction = 5 API calls, maka: 10 TPS = 50 RPS</p>
+                                <p style="margin-top:8px;color:var(--accent);font-size:0.8rem"><strong>📚 Referensi:</strong> k6 Metrics Reference, LoadRunner TPS Documentation</p>
+                            </div>
+                        </div>
                     </div>
                     <div class="method-card">
                         <div class="method-title">Level Testing</div>
                         <div class="method-formula" id="levelsFormula">Conservative: 70% / Comprehensive: 100% / Load: 120% / Stress: 150%</div>
                         <div class="method-description">Multiple level testing untuk berbagai skenario.</div>
+                        <button class="toggle-explanation" onclick="toggleMethodExplanation(this)" style="margin-top:8px;background:var(--bg-elevated);border:1px solid var(--border);color:var(--text-secondary);padding:6px 12px;border-radius:6px;font-size:0.8rem;cursor:pointer;transition:all 0.3s;font-family:inherit">📖 Kenapa Level Ini?</button>
+                        <div class="collapsible-content">
+                            <div style="background:var(--bg-dark);border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:10px;font-size:0.85rem;color:var(--text-secondary);line-height:1.6">
+                                <p><strong>70% (Conservative):</strong> Testing awal untuk verifikasi sistem stabil.</p>
+                                <p style="margin-top:6px"><strong>100% (Comprehensive):</strong> Expected peak load - validasi SLA.</p>
+                                <p style="margin-top:6px"><strong>120% (Load Test):</strong> Above average - margin of safety 20-30%.</p>
+                                <p style="margin-top:6px"><strong>150% (Stress Test):</strong> Breaking point analysis - industry practice 50-100% above normal.</p>
+                                <p style="margin-top:8px;color:var(--accent);font-size:0.8rem"><strong>📚 Referensi:</strong> k6 Test Types Guide, Grafana Average-Load Testing Best Practices</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         <!-- Matrix Guidelines Section -->
         <div class="infrastructure-content" id="matrixContent" style="display:none;padding:40px">
             <h2 class="section-title">📊 Performance Testing Matrix Guidelines</h2>
